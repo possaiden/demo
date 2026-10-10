@@ -1,0 +1,20 @@
+{
+  "project_name": "Finance Transition Program",
+  "client_name": "Acme Corp",
+  "contract_signed_date": "2026-10-19",
+
+  "pre_onboarding_weeks": 2,
+  "vertical_rules": {
+    "P2P": {"kt_weeks": 4, "gp_weeks": 4},
+    "OTC": {"kt_weeks": 4, "gp_weeks": 4},
+    "RTR": {"kt_weeks": 8, "gp_weeks": 8}
+  },
+
+  "processes": [
+    {"name": "Procure-to-Pay", "vertical": "P2P", "hiring_weeks": 8},
+    {"name": "Order-to-Cash", "vertical": "OTC", "hiring_weeks": 8},
+    {"name": "Record-to-Report", "vertical": "RTR", "hiring_weeks": 10}
+  ],
+
+  "holidays": []
+}
