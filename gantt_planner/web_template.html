@@ -1,0 +1,789 @@
+<title>Transition Plan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: executive read top-down — hero verdict + milestone track, process cards, Gantt with pinned labels, key dates, then the controls. */
+:root {
+  --bg: #f4f5f7;
+  --surface: #ffffff;
+  --sunken: #eef0f4;
+  --ink: #152033;
+  --muted: #5b6678;
+  --faint: #8a94a5;
+  --line: #e1e5eb;
+  --hero: #152033;
+  --hero-ink: #f5f7fb;
+  --hero-muted: #a9b4c6;
+  --hero-line: #2c3a53;
+  --hiring: #3b6ea5;
+  --pre: #9bbbd9;
+  --kt: #f2a541;
+  --gp: #7b5ea7;
+  --on-dark-bar: #ffffff;
+  --on-light-bar: #1c2533;
+  --contract: #d19a0c;
+  --golive: #c0392b;
+  --golive-soft: #fbe9e7;
+  --ok: #1f8a5b;
+  --ok-soft: #e3f4ec;
+  --today: #e5484d;
+  --warn-bg: #fff4d6;
+  --warn-ink: #8a5a00;
+  --focus: #3b6ea5;
+  --shadow: 0 1px 2px rgba(21, 32, 51, .05), 0 8px 24px rgba(21, 32, 51, .06);
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a0f1b; --surface: #111827; --sunken: #172033; --ink: #edf1f7; --muted: #a0abbe; --faint: #6f7b90;
+    --line: #243049; --hero: #172238; --hero-ink: #f5f7fb; --hero-muted: #9fb0c9; --hero-line: #2f3e5c;
+    --hiring: #5b8fd0; --pre: #a9c6e8; --kt: #f5b85a; --gp: #a68bd6;
+    --contract: #f2c94c; --golive: #f87171; --golive-soft: #3a1c22; --ok: #4ade80; --ok-soft: #12301f;
+    --today: #fb7185; --warn-bg: #3a2c0a; --warn-ink: #f5c86b; --focus: #7fb0ea;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0a0f1b; --surface: #111827; --sunken: #172033; --ink: #edf1f7; --muted: #a0abbe; --faint: #6f7b90;
+  --line: #243049; --hero: #172238; --hero-ink: #f5f7fb; --hero-muted: #9fb0c9; --hero-line: #2f3e5c;
+  --hiring: #5b8fd0; --pre: #a9c6e8; --kt: #f5b85a; --gp: #a68bd6;
+  --contract: #f2c94c; --golive: #f87171; --golive-soft: #3a1c22; --ok: #4ade80; --ok-soft: #12301f;
+  --today: #fb7185; --warn-bg: #3a2c0a; --warn-ink: #f5c86b; --focus: #7fb0ea;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.5 var(--font-body);
+  font-variant-numeric: tabular-nums;
+  transition: background-color .25s ease, color .25s ease;
+}
+@media (prefers-reduced-motion: reduce) { body, .switch button, .card { transition: none !important; } }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.page { max-width: 1200px; margin: 0 auto; padding-inline: 28px; padding-block: 28px 64px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
+@media (max-width: 640px) { .page { padding-inline: 16px; gap: 24px; } }
+
+/* ---------- Header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+@media (max-width: 380px) { .switch button .lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } }
+.brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.mark { width: 40px; height: 40px; border-radius: 10px; background: var(--hero); display: grid; place-items: center; flex: none; }
+.mark svg { display: block; }
+.eyebrow { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 0; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1.2; margin: 0; text-wrap: balance; }
+
+.switch { display: inline-flex; padding: 4px; gap: 2px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; box-shadow: var(--shadow); flex: none; }
+.switch button {
+  font: 600 13px/1 var(--font-body); color: var(--muted); background: transparent; border: 0;
+  padding: 9px 14px; border-radius: 999px; cursor: pointer; display: inline-flex; gap: 7px; align-items: center;
+  transition: background-color .2s ease, color .2s ease;
+}
+.switch button svg { width: 15px; height: 15px; }
+.switch button[aria-pressed="true"] { background: var(--hero); color: var(--hero-ink); }
+.switch button:hover:not([aria-pressed="true"]) { color: var(--ink); background: var(--sunken); }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ---------- Hero */
+.hero { background: var(--hero); color: var(--hero-ink); border-radius: 20px; padding: 32px 36px 26px; display: grid; gap: 26px; box-shadow: var(--shadow); }
+@media (max-width: 640px) { .hero { padding: 24px 20px 20px; border-radius: 16px; } }
+.hero-top { display: flex; justify-content: space-between; gap: 28px 40px; flex-wrap: wrap; align-items: flex-end; }
+.verdict { min-width: 0; }
+.verdict .kicker { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 600; color: var(--hero-muted); display: flex; align-items: center; gap: 8px; }
+.verdict .kicker i { width: 10px; height: 10px; background: var(--golive); transform: rotate(45deg); display: inline-block; border-radius: 1px; }
+.big-date { font-family: var(--font-display); font-weight: 800; font-size: clamp(44px, 7.5vw, 76px); line-height: .95; letter-spacing: -.02em; margin: 10px 0 10px; }
+.verdict p { margin: 0; color: var(--hero-muted); font-size: 15px; max-width: 52ch; }
+.verdict p strong { color: var(--hero-ink); font-weight: 600; }
+.stats { display: flex; gap: 0; flex-wrap: wrap; }
+.stat { padding: 2px 22px; border-left: 1px solid var(--hero-line); display: grid; gap: 4px; min-width: 0; }
+.stat:first-child { border-left: 0; padding-left: 0; }
+.stat .k { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--hero-muted); font-weight: 600; }
+.stat .v { font-family: var(--font-display); font-weight: 700; font-size: 24px; line-height: 1.1; }
+.stat .s { font-size: 12px; color: var(--hero-muted); }
+@media (max-width: 640px) { .stat { padding: 2px 14px; } .stat .v { font-size: 20px; } }
+.track { width: 100%; }
+.track svg { display: block; width: 100%; overflow: visible; }
+.t-line { stroke: var(--hero-line); stroke-width: 2; }
+.t-done { stroke: var(--hero-muted); stroke-width: 2; }
+.t-tick { stroke: var(--hero-line); stroke-width: 1; }
+.t-month { fill: var(--hero-muted); font: 500 11px var(--font-body); letter-spacing: .04em; }
+.t-label { fill: var(--hero-ink); font: 600 12px var(--font-body); }
+.t-sub { fill: var(--hero-muted); font: 500 11px var(--font-body); }
+.t-star { fill: var(--contract); }
+.t-diamond { fill: var(--golive); stroke: var(--hero); stroke-width: 2; }
+.t-today { fill: var(--today); }
+
+/* ---------- Process cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; display: grid; gap: 14px; align-content: start; min-width: 0; box-shadow: var(--shadow); transition: transform .2s ease; }
+.card:hover { transform: translateY(-2px); }
+.card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.card-head h3 { margin: 0; font-family: var(--font-display); font-size: 18px; font-weight: 700; line-height: 1.2; }
+.chip { font: 500 11px/1 var(--font-mono); letter-spacing: .04em; padding: 5px 7px; border-radius: 6px; background: var(--sunken); color: var(--muted); white-space: nowrap; }
+.golive-k { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; color: var(--golive); display: flex; align-items: center; gap: 7px; }
+.golive-k i { width: 8px; height: 8px; background: var(--golive); transform: rotate(45deg); display: inline-block; }
+.card .date { font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 1; letter-spacing: -.01em; margin-top: 6px; }
+.card .meta { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.status { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 999px; background: var(--sunken); color: var(--ink); justify-self: start; }
+.status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
+.status.live { background: var(--ok-soft); color: var(--ok); }
+.status.live .dot { background: var(--ok); }
+.strip { display: flex; height: 10px; border-radius: 999px; overflow: hidden; gap: 2px; }
+.strip span { min-width: 0; }
+.strip-key { display: flex; font: 500 11px var(--font-mono); color: var(--muted); gap: 2px; }
+.strip-key span { min-width: 0; overflow: hidden; white-space: nowrap; }
+
+/* ---------- Sections */
+section { display: grid; gap: 14px; min-width: 0; }
+.section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin: 0; }
+.note { color: var(--muted); font-size: 13px; margin: 0; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; min-width: 0; box-shadow: var(--shadow); }
+
+/* ---------- Gantt */
+.gantt { display: grid; grid-template-columns: var(--label-w, 220px) minmax(0, 1fr); overflow: hidden; border-radius: 16px; }
+@media (max-width: 640px) { .gantt { --label-w: 150px; } }
+.gantt-labels { border-right: 1px solid var(--line); background: var(--surface); }
+.gantt-scroll { overflow-x: auto; }
+.gantt svg { display: block; }
+svg text { font-family: var(--font-body); }
+.g-head { fill: var(--sunken); }
+.g-month { fill: var(--ink); font: 600 12px var(--font-body); }
+.g-year { fill: var(--faint); font: 500 11px var(--font-body); }
+.g-week { fill: var(--faint); font: 500 10px var(--font-mono); }
+.g-grid { stroke: var(--line); stroke-width: 1; }
+.g-gridweek { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 4; }
+.g-band { fill: var(--sunken); }
+.g-proc { fill: var(--ink); font: 600 13px var(--font-body); }
+.g-vert { fill: var(--faint); font: 500 10px var(--font-mono); }
+.g-act { fill: var(--muted); font: 400 12px var(--font-body); }
+.g-actdot { stroke: none; }
+.g-bar-label { font: 600 10px var(--font-mono); }
+.g-star { fill: var(--contract); }
+.g-diamond { fill: var(--golive); }
+.g-pill { fill: var(--golive-soft); }
+.g-golive-label { fill: var(--golive); font: 600 11px var(--font-body); }
+.g-today { stroke: var(--today); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.g-today-tag { fill: var(--today); }
+.g-today-label { fill: #ffffff; font: 600 10px var(--font-body); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--muted); padding: 0 4px; }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.sw { width: 20px; height: 8px; border-radius: 999px; display: inline-block; }
+.sym { font-size: 14px; line-height: 1; }
+
+/* ---------- Tables */
+.table-wrap { overflow-x: auto; position: relative; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: middle; }
+th { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+th .sw { width: 14px; margin-right: 6px; vertical-align: 1px; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: var(--sunken); }
+.range { display: grid; gap: 1px; }
+.range b { font-weight: 500; }
+.range small { color: var(--faint); font-size: 12px; }
+td.golive { color: var(--golive); font-weight: 700; font-family: var(--font-display); font-size: 15px; }
+td .pname { font-weight: 600; margin-right: 6px; }
+
+/* ---------- Inputs */
+details.panel > summary { list-style: none; cursor: pointer; padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; gap: 12px; border-radius: 16px; }
+details.panel > summary::-webkit-details-marker { display: none; }
+details.panel > summary h2 { font-size: 18px; }
+.chev { width: 28px; height: 28px; border-radius: 50%; background: var(--sunken); display: grid; place-items: center; transition: transform .2s ease; flex: none; }
+details[open] .chev { transform: rotate(180deg); }
+.inputs { padding: 4px 22px 22px; display: grid; gap: 24px; border-top: 1px solid var(--line); padding-top: 20px; }
+.fields { display: flex; flex-wrap: wrap; gap: 16px 28px; }
+.field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.field label, .group-title { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; color: var(--muted); margin: 0; }
+.group { display: grid; gap: 8px; min-width: 0; }
+input, select, textarea {
+  font: 14px var(--font-body); color: var(--ink); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; min-width: 0;
+  transition: border-color .15s ease, background-color .15s ease;
+}
+input:hover, select:hover, textarea:hover { border-color: var(--faint); }
+input[type="number"] { width: 84px; }
+textarea { width: 100%; min-height: 96px; font-family: var(--font-mono); font-size: 13px; resize: vertical; }
+.inputs table td { padding: 6px 8px 6px 0; border-bottom: 0; }
+.inputs table th { padding: 4px 8px 4px 0; border-bottom: 0; }
+.inputs tbody tr:hover td { background: transparent; }
+.inputs table input[type="text"] { width: 100%; min-width: 160px; }
+input.warn { border-color: var(--warn-ink); background: var(--warn-bg); }
+.warn-msg { font-size: 11px; color: var(--warn-ink); margin-top: 3px; min-height: 0; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn { font: 600 13px var(--font-body); padding: 10px 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.btn:hover { background: var(--sunken); }
+.btn.primary { background: var(--hero); color: var(--hero-ink); border-color: var(--hero); }
+.btn.primary:hover { opacity: .9; background: var(--hero); }
+.btn-icon { border: 0; background: transparent; color: var(--faint); cursor: pointer; font-size: 18px; line-height: 1; padding: 6px 9px; border-radius: 8px; }
+.btn-icon:hover { color: var(--golive); background: var(--sunken); }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 24px; }
+@media (max-width: 820px) { .two { grid-template-columns: minmax(0, 1fr); } }
+footer { color: var(--faint); font-size: 12px; text-align: center; }
+@media (max-width: 640px) {
+  .mark { display: none; }
+  h1 { font-size: 18px; }
+  .eyebrow { font-size: 11px; }
+  .switch button { padding: 8px 10px; font-size: 12px; }
+  .stats { gap: 14px 0; }
+}
+</style>
+
+<div class="page">
+  <header class="top">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 22 22"><rect x="2" y="4" width="10" height="3" rx="1.5" fill="#9bbbd9"/><rect x="7" y="9.5" width="8" height="3" rx="1.5" fill="#f2a541"/><rect x="11" y="15" width="7" height="3" rx="1.5" fill="#a68bd6"/><path d="M19.5 14.5l2 2-2 2-2-2z" fill="#f87171"/></svg>
+      </div>
+      <div>
+        <p class="eyebrow" id="eyebrow">Transition plan</p>
+        <h1 id="project-name">Transition Plan</h1>
+      </div>
+    </div>
+    <div class="switch" role="group" aria-label="Colour theme">
+      <button type="button" id="theme-light" data-theme-choice="light" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span class="lbl">Light</span></button>
+      <button type="button" id="theme-dark" data-theme-choice="dark" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg><span class="lbl">Dark</span></button>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Programme summary">
+    <div class="hero-top">
+      <div class="verdict">
+        <div class="kicker"><i aria-hidden="true"></i><span id="kicker">All processes live by</span></div>
+        <div class="big-date" id="big-date">—</div>
+        <p id="verdict-text"></p>
+      </div>
+      <div class="stats" id="stats"></div>
+    </div>
+    <div class="track" id="track"></div>
+  </section>
+
+  <div class="cards" id="cards"></div>
+
+  <section aria-labelledby="gantt-title">
+    <div class="section-head">
+      <h2 id="gantt-title">Timeline</h2>
+      <p class="note">Working weeks, Mon–Fri. Each phase starts the next working day. Hover a bar for exact dates.</p>
+    </div>
+    <div class="panel gantt" id="gantt">
+      <div class="gantt-labels" id="gantt-labels"></div>
+      <div class="gantt-scroll" id="gantt-scroll"></div>
+    </div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <section aria-labelledby="dates-title">
+    <h2 id="dates-title">Key dates</h2>
+    <div class="panel table-wrap"><table id="dates-table"></table></div>
+  </section>
+
+  <details class="panel" id="adjust" open>
+    <summary>
+      <div>
+        <h2>Adjust the plan</h2>
+        <p class="note">Change any value and every date, bar and tile above updates.</p>
+      </div>
+      <span class="chev" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+    </summary>
+    <form class="inputs" id="inputs" autocomplete="off">
+      <div class="fields">
+        <div class="field">
+          <label for="in-contract">&#9733; Contract signed</label>
+          <input type="date" id="in-contract" required>
+        </div>
+        <div class="field">
+          <label for="in-pre">Pre-Onboarding (weeks)</label>
+          <input type="number" id="in-pre" min="1" max="12" step="1">
+        </div>
+      </div>
+
+      <div class="group">
+        <p class="group-title">Processes</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Process</th><th>Vertical</th><th>Own contract date (optional)</th><th>Hiring (weeks)</th><th><span class="vh">Remove</span></th></tr></thead>
+            <tbody id="proc-rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="two">
+        <div class="group">
+          <p class="group-title">KT &amp; Guided Production by vertical</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Vertical</th><th>KT (weeks)</th><th>Guided Prod. (weeks)</th></tr></thead>
+              <tbody id="rule-rows"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="field">
+          <label for="in-holidays">Holidays (one date per line, YYYY-MM-DD)</label>
+          <textarea id="in-holidays" placeholder="2026-12-25&#10;2027-01-01"></textarea>
+          <span class="note">Skipped like weekends.</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn primary" id="add-proc">Add process</button>
+        <button type="button" class="btn" id="reset">Reset to defaults</button>
+      </div>
+    </form>
+  </details>
+
+  <footer>Working days Mon–Fri · 1 week = 5 working days · Go-Live is the next working day after Guided Production</footer>
+</div>
+
+<script id="plan-config" type="application/json">__PLAN_CONFIG__</script>
+<script>
+(function () {
+  "use strict";
+
+  // ---------------------------------------------------------------- theme
+  var THEME_KEY = "transition-plan-theme";
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    document.querySelectorAll("[data-theme-choice]").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-theme-choice") === theme));
+    });
+  }
+  var savedTheme = null;
+  try { savedTheme = localStorage.getItem(THEME_KEY); } catch (e) {}
+  applyTheme(savedTheme === "dark" ? "dark" : "light"); // light by default
+  document.querySelectorAll("[data-theme-choice]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var t = b.getAttribute("data-theme-choice");
+      applyTheme(t);
+      try { localStorage.setItem(THEME_KEY, t); } catch (e) {}
+    });
+  });
+
+  // ---------------------------------------------------------------- dates (UTC day numbers)
+  var MS = 86400000;
+  var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  function parseISO(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || "").trim());
+    return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) / MS : null;
+  }
+  function dow(d) { return new Date(d * MS).getUTCDay(); }
+  function fmt(d, withYear) {
+    var x = new Date(d * MS);
+    return x.getUTCDate() + " " + MONTHS[x.getUTCMonth()] + (withYear ? " " + x.getUTCFullYear() : "");
+  }
+  function workday(start, n, hol) { // Excel WORKDAY for n >= 0
+    var d = start;
+    while (n > 0) { d += 1; var w = dow(d); if (w !== 0 && w !== 6 && !hol[d]) n -= 1; }
+    return d;
+  }
+  function todayNum() { var n = new Date(); return Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) / MS; }
+
+  var ACTS = [
+    { key: "hiring", label: "Hiring", color: "--hiring", ink: "--on-dark-bar" },
+    { key: "pre", label: "Pre-Onboarding", color: "--pre", ink: "--on-light-bar" },
+    { key: "kt", label: "Knowledge Transfer", color: "--kt", ink: "--on-light-bar" },
+    { key: "gp", label: "Guided Production", color: "--gp", ink: "--on-dark-bar" }
+  ];
+
+  function schedule(cfg) {
+    var hol = {};
+    (cfg.holidays || []).forEach(function (h) { var d = parseISO(h); if (d !== null) hol[d] = true; });
+    var base = parseISO(cfg.contract_signed_date);
+    return cfg.processes.map(function (p) {
+      var rule = cfg.vertical_rules[p.vertical] || { kt_weeks: 4, gp_weeks: 4 };
+      var contract = parseISO(p.contract_signed_date) || base;
+      var weeks = { hiring: +p.hiring_weeks || 8, pre: +cfg.pre_onboarding_weeks || 2, kt: +rule.kt_weeks || 1, gp: +rule.gp_weeks || 1 };
+      var prev = contract, phases = [];
+      ACTS.forEach(function (a) {
+        var s = workday(prev, 1, hol);
+        var e = workday(s, Math.max(1, Math.round(weeks[a.key] * 5)) - 1, hol);
+        phases.push({ act: a, weeks: weeks[a.key], start: s, end: e });
+        prev = e;
+      });
+      return { name: p.name, vertical: p.vertical, contract: contract, phases: phases, golive: workday(prev, 1, hol) };
+    });
+  }
+
+  function statusOf(p, today) {
+    if (today >= p.golive) return { cls: "live", text: "Live" };
+    if (today <= p.contract) {
+      var n = p.contract - today;
+      return { cls: "", text: n === 0 ? "Contract signing today" : "Starts in " + n + " day" + (n === 1 ? "" : "s") };
+    }
+    for (var i = 0; i < p.phases.length; i++) {
+      var ph = p.phases[i];
+      if (today <= ph.end) {
+        var wk = Math.max(1, Math.min(Math.ceil(ph.weeks), Math.floor((today - ph.start) / 7) + 1));
+        return { cls: "", color: ph.act.color, text: ph.act.label + " · week " + wk + " of " + ph.weeks };
+      }
+    }
+    return { cls: "", text: "Go-Live " + fmt(p.golive) };
+  }
+
+  // ---------------------------------------------------------------- state
+  var DEFAULT = JSON.parse(document.getElementById("plan-config").textContent);
+  var STATE_KEY = "transition-plan-inputs";
+  var BASE_SIG = JSON.stringify(DEFAULT);
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  var cfg = clone(DEFAULT);
+  try {
+    var saved = JSON.parse(localStorage.getItem(STATE_KEY) || "null");
+    if (saved && saved.base === BASE_SIG && saved.cfg) cfg = saved.cfg;
+  } catch (e) {}
+  function persist() { try { localStorage.setItem(STATE_KEY, JSON.stringify({ base: BASE_SIG, cfg: cfg })); } catch (e) {} }
+
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      if (k === "text") n.textContent = attrs[k];
+      else n.setAttribute(k, attrs[k]);
+    });
+    (kids || []).forEach(function (c) { if (c != null) n.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return n;
+  }
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function sv(tag, attrs, text) {
+    var n = document.createElementNS(SVGNS, tag);
+    Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); });
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function starPts(cx, cy, r) {
+    var pts = [];
+    for (var i = 0; i < 10; i++) {
+      var rad = i % 2 ? r * 0.45 : r, a = Math.PI / 5 * i - Math.PI / 2;
+      pts.push((cx + rad * Math.cos(a)).toFixed(1) + "," + (cy + rad * Math.sin(a)).toFixed(1));
+    }
+    return pts.join(" ");
+  }
+  function diamondPath(cx, cy, r) { return "M" + cx + " " + (cy - r) + "l" + r + " " + r + "l" + -r + " " + r + "l" + -r + " " + -r + "z"; }
+  function monthsBetween(a, b, fn) {
+    var d = new Date(a * MS); d = Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1) / MS;
+    while (d <= b) { fn(d); var x = new Date(d * MS); d = Date.UTC(x.getUTCFullYear(), x.getUTCMonth() + 1, 1) / MS; }
+  }
+
+  // ---------------------------------------------------------------- render
+  var plan = [], start = 0, last = null;
+  function render() {
+    plan = schedule(cfg);
+    if (!plan.length) return;
+    start = Math.min.apply(null, plan.map(function (p) { return p.contract; }));
+    last = plan.reduce(function (a, p) { return p.golive > a.golive ? p : a; }, plan[0]);
+    var today = todayNum();
+    var totalWeeks = Math.round((last.golive - start) / 7);
+
+    document.getElementById("eyebrow").textContent = "Transition plan" + (cfg.client_name ? " · " + cfg.client_name : "");
+    document.getElementById("project-name").textContent = cfg.project_name || "Transition Plan";
+    document.title = (cfg.project_name || "Transition") + " Plan";
+
+    // Hero
+    var allLive = today >= last.golive;
+    document.getElementById("kicker").textContent = allLive ? "All processes live since" : "All processes live by";
+    document.getElementById("big-date").textContent = fmt(last.golive, true);
+    var vt = document.getElementById("verdict-text");
+    vt.textContent = "";
+    vt.append(DAYS[dow(last.golive)] + ", " + totalWeeks + " weeks after contract signature. ",
+      "Critical path is ", el("strong", { text: last.name + " (" + last.vertical + ")" }),
+      ", which has the longest hiring, KT and Guided Production.");
+
+    var daysTo = last.golive - today;
+    var stats = document.getElementById("stats");
+    stats.textContent = "";
+    [
+      ["★ Contract signed", fmt(start, true), DAYS[dow(start)]],
+      [daysTo > 0 ? "Days to final go-live" : "Status", daysTo > 0 ? String(daysTo) : "Live", daysTo > 0 ? "calendar days from today" : "all processes"],
+      ["Processes", String(plan.length), plan.map(function (p) { return p.vertical; }).join(" · ")]
+    ].forEach(function (s) {
+      stats.appendChild(el("div", { class: "stat" }, [el("span", { class: "k", text: s[0] }), el("span", { class: "v", text: s[1] }), el("span", { class: "s", text: s[2] })]));
+    });
+
+    renderTrack(today);
+    renderCards(today);
+    renderGantt(today);
+    renderDates();
+  }
+
+  function renderTrack(today) {
+    var host = document.getElementById("track");
+    var W = Math.max(280, host.clientWidth || 900), H = 92, PAD = 14;
+    var t0 = start, t1 = last.golive;
+    function X(d) { return PAD + (W - 2 * PAD) * (d - t0) / Math.max(1, t1 - t0); }
+    var svg = sv("svg", { viewBox: "0 0 " + W + " " + H, height: H, role: "img",
+      "aria-label": "Milestones from contract signature to go-live" });
+    var ly = 40;
+    monthsBetween(t0, t1, function (m) {
+      var x = X(m);
+      svg.appendChild(sv("line", { class: "t-tick", x1: x, x2: x, y1: ly + 8, y2: ly + 16 }));
+      if (x > PAD + 24 && x < W - PAD - 24) svg.appendChild(sv("text", { class: "t-month", x: x, y: ly + 30, "text-anchor": "middle" }, MONTHS[new Date(m * MS).getUTCMonth()].toUpperCase()));
+    });
+    svg.appendChild(sv("line", { class: "t-line", x1: X(t0), x2: X(t1), y1: ly, y2: ly }));
+    if (today > t0) svg.appendChild(sv("line", { class: "t-done", x1: X(t0), x2: X(Math.min(today, t1)), y1: ly, y2: ly }));
+
+    svg.appendChild(sv("polygon", { class: "t-star", points: starPts(X(t0), ly, 11) }));
+    svg.appendChild(sv("text", { class: "t-label", x: X(t0) - 4, y: 14 }, "Contract"));
+
+    // group go-lives sharing a date
+    var groups = {};
+    plan.forEach(function (p) { (groups[p.golive] = groups[p.golive] || []).push(p.vertical); });
+    var keys = Object.keys(groups).map(Number).sort(function (a, b) { return a - b; });
+    var lastRight = -1e9;
+    keys.forEach(function (d, i) {
+      var x = X(d), isLast = i === keys.length - 1;
+      svg.appendChild(sv("path", { class: "t-diamond", d: diamondPath(x, ly, 9) }));
+      var anchor = isLast ? "end" : "middle";
+      var tx = isLast ? x + 4 : x;
+      var lbl = sv("text", { class: "t-label", x: tx, y: 14, "text-anchor": anchor }, groups[d].join(" · ") + " ");
+      lbl.appendChild(sv("tspan", { class: "t-sub" }, fmt(d)));
+      svg.appendChild(lbl);
+    });
+    if (today > t0 && today < t1) {
+      svg.appendChild(sv("circle", { class: "t-today", cx: X(today), cy: ly, r: 5 }));
+      svg.appendChild(sv("text", { class: "t-sub", x: X(today), y: H - 4, "text-anchor": "middle" }, "Today"));
+    }
+    host.textContent = "";
+    host.appendChild(svg);
+  }
+
+  function renderCards(today) {
+    var cards = document.getElementById("cards");
+    cards.textContent = "";
+    plan.forEach(function (p) {
+      var total = p.phases.reduce(function (a, ph) { return a + ph.weeks; }, 0);
+      var st = statusOf(p, today);
+      var strip = el("div", { class: "strip", role: "img",
+        "aria-label": p.phases.map(function (ph) { return ph.act.label + " " + ph.weeks + " weeks"; }).join(", ") });
+      var key = el("div", { class: "strip-key", "aria-hidden": "true" });
+      p.phases.forEach(function (ph) {
+        strip.appendChild(el("span", { style: "flex:" + ph.weeks / total + ";background:var(" + ph.act.color + ")" }));
+        key.appendChild(el("span", { style: "flex:" + ph.weeks / total, text: ph.weeks + "w" }));
+      });
+      var dot = el("span", { class: "dot" });
+      if (st.color) dot.setAttribute("style", "background:var(" + st.color + ")");
+      cards.appendChild(el("article", { class: "card" }, [
+        el("div", { class: "card-head" }, [el("h3", { text: p.name }), el("span", { class: "chip", text: p.vertical })]),
+        el("div", {}, [
+          el("div", { class: "golive-k" }, [el("i", { "aria-hidden": "true" }), "Go-Live"]),
+          el("div", { class: "date", text: fmt(p.golive, true) }),
+          el("div", { class: "meta", text: DAYS[dow(p.golive)] + " · " + Math.round((p.golive - p.contract) / 7) + " weeks from contract" })
+        ]),
+        el("span", { class: "status " + st.cls }, [dot, st.text]),
+        el("div", { style: "display:grid;gap:6px" }, [strip, key])
+      ]));
+    });
+  }
+
+  function renderGantt(today) {
+    var t0 = start - ((dow(start) + 6) % 7);          // Monday on or before contract
+    var nWeeks = Math.ceil((last.golive - t0 + 1) / 7) + 1;
+    var HEAD = 52, PROC = 40, ROW = 30, GAP = 8, PADR = 112, BOTTOM = 14;
+    var scroll = document.getElementById("gantt-scroll");
+    var avail = scroll.clientWidth || 900;
+    var WK = Math.max(24, (avail - PADR) / nWeeks);
+    var W = Math.round(nWeeks * WK + PADR);
+    var H = HEAD + plan.length * (PROC + ACTS.length * ROW + GAP) - GAP + BOTTOM;
+    function X(d) { return (d - t0) / 7 * WK; }
+
+    var labels = document.getElementById("gantt-labels");
+    var LW = labels.clientWidth || 220;
+    var ls = sv("svg", { width: LW, height: H, "aria-hidden": "true" });
+    ls.appendChild(sv("rect", { class: "g-head", x: 0, y: 0, width: LW, height: HEAD }));
+    ls.appendChild(sv("text", { class: "g-week", x: 16, y: HEAD - 12 }, "PROCESS / PHASE"));
+
+    var svg = sv("svg", { width: W, height: H, role: "img",
+      "aria-label": "Gantt chart of hiring, pre-onboarding, knowledge transfer and guided production for each process" });
+    svg.appendChild(sv("rect", { class: "g-head", x: 0, y: 0, width: W, height: HEAD }));
+
+    // week ticks
+    for (var i = 0; i <= nWeeks; i++) {
+      var wd = t0 + i * 7, x = X(wd);
+      svg.appendChild(sv("line", { class: "g-gridweek", x1: x, x2: x, y1: HEAD, y2: H }));
+      if (i < nWeeks && WK >= 22) svg.appendChild(sv("text", { class: "g-week", x: x + WK / 2, y: HEAD - 10, "text-anchor": "middle" }, String(new Date(wd * MS).getUTCDate()).padStart(2, "0")));
+    }
+    // months
+    var firstLabel = sv("text", { class: "g-month", x: 6, y: 20 }, MONTHS[new Date(t0 * MS).getUTCMonth()] + " ");
+    firstLabel.appendChild(sv("tspan", { class: "g-year" }, "’" + String(new Date(t0 * MS).getUTCFullYear()).slice(2)));
+    svg.appendChild(firstLabel);
+    monthsBetween(t0, t0 + nWeeks * 7, function (m) {
+      var mx = X(m), dd = new Date(m * MS);
+      svg.appendChild(sv("line", { class: "g-grid", x1: mx, x2: mx, y1: 6, y2: H }));
+      if (W - mx > 40) {
+        var t = sv("text", { class: "g-month", x: mx + 6, y: 20 }, MONTHS[dd.getUTCMonth()] + " ");
+        t.appendChild(sv("tspan", { class: "g-year" }, "’" + String(dd.getUTCFullYear()).slice(2)));
+        svg.appendChild(t);
+      }
+    });
+
+    var y = HEAD;
+    plan.forEach(function (p, pi) {
+      [ls, svg].forEach(function (s) { s.appendChild(sv("rect", { class: "g-band", x: 0, y: y + 4, width: s === ls ? LW : W, height: PROC - 8 })); });
+      var name = sv("text", { class: "g-proc", x: 16, y: y + PROC / 2 + 4 }, p.name + "  ");
+      name.appendChild(sv("tspan", { class: "g-vert" }, p.vertical));
+      ls.appendChild(name);
+
+      var sx = X(p.contract + 0.5), cy = y + PROC / 2;
+      var star = sv("polygon", { class: "g-star", points: starPts(Math.max(sx, 11), cy, 10) });
+      star.appendChild(sv("title", {}, "Contract signed " + fmt(p.contract, true)));
+      svg.appendChild(star);
+
+      var gx = X(p.golive + 0.5);
+      var dia = sv("path", { class: "g-diamond", d: diamondPath(gx, cy, 9) });
+      dia.appendChild(sv("title", {}, "Go-Live " + fmt(p.golive, true)));
+      svg.appendChild(dia);
+      var gl = "Go-Live " + fmt(p.golive), pw = gl.length * 6.2 + 16;
+      svg.appendChild(sv("rect", { class: "g-pill", x: gx + 14, y: cy - 11, width: pw, height: 22, rx: 11 }));
+      svg.appendChild(sv("text", { class: "g-golive-label", x: gx + 14 + pw / 2, y: cy + 4, "text-anchor": "middle" }, gl));
+      y += PROC;
+
+      p.phases.forEach(function (ph) {
+        ls.appendChild(sv("circle", { class: "g-actdot", cx: 22, cy: y + ROW / 2, r: 4, style: "fill:var(" + ph.act.color + ")" }));
+        ls.appendChild(sv("text", { class: "g-act", x: 34, y: y + ROW / 2 + 4 }, ph.act.label));
+        var bx = X(ph.start), bw = Math.max(X(ph.end + 1) - bx, 4), bh = 16;
+        var bar = sv("rect", { x: bx, y: y + (ROW - bh) / 2, width: bw, height: bh, rx: bh / 2, style: "fill:var(" + ph.act.color + ")" });
+        bar.appendChild(sv("title", {}, p.name + " — " + ph.act.label + ": " + fmt(ph.start, true) + " → " + fmt(ph.end, true) + " (" + ph.weeks + " weeks)"));
+        svg.appendChild(bar);
+        if (bw > 40) svg.appendChild(sv("text", { class: "g-bar-label", x: bx + bw / 2, y: y + ROW / 2 + 3.5, "text-anchor": "middle", style: "fill:var(" + ph.act.ink + ")", "pointer-events": "none" }, ph.weeks + " wks"));
+        y += ROW;
+      });
+      y += GAP;
+    });
+
+    if (today >= t0 && today <= t0 + nWeeks * 7) {
+      var tx = X(today + 0.5);
+      svg.appendChild(sv("line", { class: "g-today", x1: tx, x2: tx, y1: HEAD, y2: H }));
+      svg.appendChild(sv("rect", { class: "g-today-tag", x: tx - 22, y: HEAD - 2 - 16, width: 44, height: 16, rx: 8 }));
+      svg.appendChild(sv("text", { class: "g-today-label", x: tx, y: HEAD - 6, "text-anchor": "middle" }, "Today"));
+    }
+
+    labels.textContent = "";
+    labels.appendChild(ls);
+    scroll.textContent = "";
+    scroll.appendChild(svg);
+  }
+
+  function renderDates() {
+    var t = document.getElementById("dates-table");
+    t.textContent = "";
+    var hr = el("tr", {}, [el("th", { scope: "col", text: "Process" }), el("th", { scope: "col", text: "★ Contract" })]);
+    ACTS.forEach(function (a) { hr.appendChild(el("th", { scope: "col" }, [el("span", { class: "sw", style: "background:var(" + a.color + ")" }), a.label])); });
+    hr.appendChild(el("th", { scope: "col", text: "◆ Go-Live" }));
+    t.appendChild(el("thead", {}, [hr]));
+    var body = el("tbody");
+    plan.forEach(function (p) {
+      var tr = el("tr", {}, [
+        el("td", {}, [el("span", { class: "pname", text: p.name }), el("span", { class: "chip", text: p.vertical })]),
+        el("td", { text: fmt(p.contract, true) })
+      ]);
+      p.phases.forEach(function (ph) {
+        tr.appendChild(el("td", {}, [el("div", { class: "range" }, [el("b", { text: fmt(ph.start) + " → " + fmt(ph.end) }), el("small", { text: ph.weeks + " weeks" })])]));
+      });
+      tr.appendChild(el("td", { class: "golive", text: fmt(p.golive, true) }));
+      body.appendChild(tr);
+    });
+    t.appendChild(body);
+  }
+
+  function renderLegend() {
+    var lg = document.getElementById("legend");
+    lg.textContent = "";
+    lg.appendChild(el("span", {}, [el("span", { class: "sym", style: "color:var(--contract)", text: "★" }), "Contract Signed"]));
+    ACTS.forEach(function (a) { lg.appendChild(el("span", {}, [el("span", { class: "sw", style: "background:var(" + a.color + ")" }), a.label])); });
+    lg.appendChild(el("span", {}, [el("span", { class: "sym", style: "color:var(--golive)", text: "◆" }), "Go-Live"]));
+    lg.appendChild(el("span", {}, [el("span", { class: "sw", style: "background:var(--today);height:2px" }), "Today"]));
+  }
+
+  // ---------------------------------------------------------------- inputs
+  function buildInputs() {
+    document.getElementById("in-contract").value = cfg.contract_signed_date;
+    document.getElementById("in-pre").value = cfg.pre_onboarding_weeks;
+    document.getElementById("in-holidays").value = (cfg.holidays || []).join("\n");
+
+    var verticals = Object.keys(cfg.vertical_rules);
+    var rules = document.getElementById("rule-rows");
+    rules.textContent = "";
+    verticals.forEach(function (v) {
+      function num(field) {
+        var i = el("input", { type: "number", min: "1", max: "26", step: "1", id: "rule-" + v + "-" + field, "aria-label": v + " " + (field === "kt_weeks" ? "KT weeks" : "Guided Production weeks") });
+        i.value = cfg.vertical_rules[v][field];
+        i.addEventListener("input", function () { if (i.value !== "" && +i.value > 0) { cfg.vertical_rules[v][field] = +i.value; update(); } });
+        return i;
+      }
+      rules.appendChild(el("tr", {}, [el("td", {}, [el("span", { class: "chip", text: v })]), el("td", {}, [num("kt_weeks")]), el("td", {}, [num("gp_weeks")])]));
+    });
+
+    var rows = document.getElementById("proc-rows");
+    rows.textContent = "";
+    cfg.processes.forEach(function (p, idx) {
+      var name = el("input", { type: "text", id: "proc-" + idx + "-name", "aria-label": "Process name" });
+      name.value = p.name;
+      name.addEventListener("input", function () { p.name = name.value || "Process"; update(); });
+
+      var vert = el("select", { id: "proc-" + idx + "-vertical", "aria-label": "Vertical" });
+      verticals.forEach(function (v) { var o = el("option", { value: v, text: v }); if (v === p.vertical) o.selected = true; vert.appendChild(o); });
+      vert.addEventListener("change", function () { p.vertical = vert.value; update(); });
+
+      var cd = el("input", { type: "date", id: "proc-" + idx + "-contract", "aria-label": "Own contract date (blank uses the project date)" });
+      cd.value = p.contract_signed_date || "";
+      cd.addEventListener("input", function () { if (cd.value) p.contract_signed_date = cd.value; else delete p.contract_signed_date; update(); });
+
+      var hw = el("input", { type: "number", min: "1", max: "26", step: "1", id: "proc-" + idx + "-hiring", "aria-label": "Hiring weeks" });
+      hw.value = p.hiring_weeks;
+      var msg = el("div", { class: "warn-msg", "aria-live": "polite" });
+      function checkHiring() {
+        var v = +hw.value, out = hw.value !== "" && (v < 8 || v > 10);
+        hw.classList.toggle("warn", out);
+        msg.textContent = out ? "Standard is 8–10 weeks" : "";
+      }
+      hw.addEventListener("input", function () { if (hw.value !== "" && +hw.value > 0) { p.hiring_weeks = +hw.value; update(); } checkHiring(); });
+      checkHiring();
+
+      var rm = el("button", { type: "button", class: "btn-icon", "aria-label": "Remove " + p.name, title: "Remove process", text: "×" });
+      rm.disabled = cfg.processes.length < 2;
+      rm.addEventListener("click", function () { if (cfg.processes.length > 1) { cfg.processes.splice(idx, 1); buildInputs(); update(); } });
+
+      rows.appendChild(el("tr", {}, [el("td", {}, [name]), el("td", {}, [vert]), el("td", {}, [cd]), el("td", {}, [hw, msg]), el("td", {}, [rm])]));
+    });
+  }
+
+  function update() { persist(); render(); }
+
+  document.getElementById("in-contract").addEventListener("input", function (e) {
+    if (parseISO(e.target.value) !== null) { cfg.contract_signed_date = e.target.value; update(); }
+  });
+  document.getElementById("in-pre").addEventListener("input", function (e) {
+    if (e.target.value !== "" && +e.target.value > 0) { cfg.pre_onboarding_weeks = +e.target.value; update(); }
+  });
+  document.getElementById("in-holidays").addEventListener("input", function (e) {
+    cfg.holidays = e.target.value.split(/[\s,]+/).filter(function (s) { return parseISO(s) !== null; });
+    update();
+  });
+  document.getElementById("add-proc").addEventListener("click", function () {
+    var v = Object.keys(cfg.vertical_rules)[0];
+    cfg.processes.push({ name: "New process", vertical: v, hiring_weeks: 8 });
+    buildInputs(); update();
+  });
+  document.getElementById("reset").addEventListener("click", function () {
+    cfg = clone(DEFAULT); buildInputs(); update();
+  });
+  document.getElementById("inputs").addEventListener("submit", function (e) { e.preventDefault(); });
+
+  var rt;
+  window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(render, 120); });
+
+  renderLegend();
+  buildInputs();
+  render();
+})();
+</script>

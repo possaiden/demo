@@ -15,6 +15,7 @@ from pathlib import Path
 from gantt_planner.excel_export import export_excel
 from gantt_planner.ppt_export import export_ppt
 from gantt_planner.schedule import build_plan, load_config
+from gantt_planner.web_export import export_web
 
 
 def main() -> None:
@@ -29,18 +30,24 @@ def main() -> None:
     parser.add_argument("--name", default="Project_Plan", help="Output file name (no extension)")
     args = parser.parse_args()
 
-    plan = build_plan(load_config(args.config), args.contract_date)
+    config = load_config(args.config)
+    if args.contract_date:
+        config["contract_signed_date"] = args.contract_date.isoformat()
+        for proc in config["processes"]:
+            proc.pop("contract_signed_date", None)
+    plan = build_plan(config)
     out = Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    xlsx, pptx = out / f"{args.name}.xlsx", out / f"{args.name}.pptx"
+    xlsx, pptx, html = (out / f"{args.name}.{ext}" for ext in ("xlsx", "pptx", "html"))
     export_excel(plan, xlsx)
     export_ppt(plan, pptx)
+    export_web(config, html)
 
     print(f"{plan.project_name}: contract signed {plan.contract_date:%d-%b-%Y}")
     for p in plan.processes:
         print(f"  {p.name:<20} ({p.vertical})  Go-Live {p.go_live:%a %d-%b-%Y}  "
               f"[{p.weeks_to_go_live} wks]")
-    print(f"Wrote {xlsx}\nWrote {pptx}")
+    print(f"Wrote {xlsx}\nWrote {pptx}\nWrote {html}")
 
 
 if __name__ == "__main__":
