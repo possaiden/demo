@@ -1,0 +1,1100 @@
+<title>AI Stack Practice Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: sticky tab bar over four tinted "beds", one per activity; category colours carry through every view. */
+:root {
+  --bg: #f6faf3; --surface: #ffffff; --surface-2: #f1f6ee; --ink: #1b2a21; --muted: #4b5d51; --line: #d3e2d0;
+  --accent: #23764a; --accent-ink: #ffffff; --accent-soft: #dff0e3; --focus: #c2185b;
+  --bed-guide: #eaf6e6; --bed-practice: #fdeff3; --bed-quiz: #fff6d8; --bed-history: #e6f3fa;
+  --chat: #a3284f; --chat-bg: #fce4eb; --search: #1d5e8a; --search-bg: #dcf0fa; --auto: #775600; --auto-bg: #fff0bf;
+  --analytics: #5a3d93; --analytics-bg: #ece4f8; --agent: #24692f; --agent-bg: #dbf1dc;
+  --good: #1f7a3a; --good-bg: #e2f4e6; --warn: #8a5800; --warn-bg: #fff2cf; --bad: #b3261e; --bad-bg: #fde6e4; --tip: #1d5e8a; --tip-bg: #e2f1fa;
+  --shadow: 0 1px 2px rgba(27, 42, 33, .06), 0 6px 18px rgba(27, 42, 33, .06);
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111a14; --surface: #19251d; --surface-2: #1f2d24; --ink: #e7f1e9; --muted: #a8bcae; --line: #2f4136;
+    --accent: #7fd39a; --accent-ink: #0d1a11; --accent-soft: #1f3a29; --focus: #ff9ec0;
+    --bed-guide: #142219; --bed-practice: #22171c; --bed-quiz: #221f10; --bed-history: #121f27;
+    --chat: #f6a9c1; --chat-bg: #3a2029; --search: #8fcbf0; --search-bg: #17303f; --auto: #f2d372; --auto-bg: #342b10;
+    --analytics: #c8b5f2; --analytics-bg: #2a2340; --agent: #97dea4; --agent-bg: #1b3322;
+    --good: #85dc98; --good-bg: #183323; --warn: #f2c35e; --warn-bg: #352a10; --bad: #ff9a90; --bad-bg: #3b1d1b; --tip: #8fcbf0; --tip-bg: #17303f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 22px rgba(0, 0, 0, .25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111a14; --surface: #19251d; --surface-2: #1f2d24; --ink: #e7f1e9; --muted: #a8bcae; --line: #2f4136;
+  --accent: #7fd39a; --accent-ink: #0d1a11; --accent-soft: #1f3a29; --focus: #ff9ec0;
+  --bed-guide: #142219; --bed-practice: #22171c; --bed-quiz: #221f10; --bed-history: #121f27;
+  --chat: #f6a9c1; --chat-bg: #3a2029; --search: #8fcbf0; --search-bg: #17303f; --auto: #f2d372; --auto-bg: #342b10;
+  --analytics: #c8b5f2; --analytics-bg: #2a2340; --agent: #97dea4; --agent-bg: #1b3322;
+  --good: #85dc98; --good-bg: #183323; --warn: #f2c35e; --warn-bg: #352a10; --bad: #ff9a90; --bad-bg: #3b1d1b; --tip: #8fcbf0; --tip-bg: #17303f;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 22px rgba(0, 0, 0, .25);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.55; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(1.6rem, 3.2vw, 2.25rem); font-weight: 800; letter-spacing: -.01em; }
+h2 { font-size: clamp(1.3rem, 2.4vw, 1.65rem); font-weight: 800; }
+h3 { font-size: 1.1rem; font-weight: 600; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; }
+.muted { color: var(--muted); }
+.eyebrow { font-size: .75rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Header */
+.top { padding-block: 20px 14px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; }
+.brand { display: flex; gap: 14px; align-items: center; min-width: 0; }
+.brand-mark { width: 46px; height: 46px; flex: none; }
+.brand p { color: var(--muted); font-size: .92rem; }
+.top-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.btn { border: 1.5px solid var(--line); background: var(--surface); border-radius: 999px; padding: 8px 16px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn.ghost { background: transparent; }
+.btn.danger { color: var(--bad); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.small { padding: 5px 12px; min-height: 34px; font-size: .9rem; }
+
+/* Tabs */
+.tabbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
+.tabs { display: flex; gap: 4px; overflow-x: auto; padding-block: 8px; scrollbar-width: none; }
+.tab { border: 0; background: transparent; padding: 9px 16px; border-radius: 999px; font-weight: 600; cursor: pointer; white-space: nowrap; color: var(--muted); }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+.tab:hover:not([aria-selected="true"]) { background: var(--surface-2); color: var(--ink); }
+
+.bed { padding-block: 28px 44px; min-height: 60vh; }
+.bed.guide { background: var(--bed-guide); }
+.bed.practice { background: var(--bed-practice); }
+.bed.quiz { background: var(--bed-quiz); }
+.bed.history { background: var(--bed-history); }
+.bed-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: end; margin-bottom: 20px; }
+.bed-head p { max-width: 64ch; color: var(--muted); margin-top: 6px; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; box-shadow: var(--shadow); min-width: 0; }
+
+/* Category tokens */
+.cat-chat { --c: var(--chat); --cbg: var(--chat-bg); }
+.cat-search { --c: var(--search); --cbg: var(--search-bg); }
+.cat-auto { --c: var(--auto); --cbg: var(--auto-bg); }
+.cat-analytics { --c: var(--analytics); --cbg: var(--analytics-bg); }
+.cat-agent { --c: var(--agent); --cbg: var(--agent-bg); }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; background: var(--cbg, var(--surface-2)); color: var(--c, var(--ink)); font-weight: 700; font-size: .82rem; white-space: nowrap; }
+.pill .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+/* Guide */
+.timeline { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; position: relative; }
+.timeline::before { content: ""; position: absolute; left: 0; right: 0; top: 22px; height: 2px; background: var(--ink); opacity: .25; }
+.stack-card { position: relative; display: flex; flex-direction: column; gap: 10px; }
+.stack-num { width: 44px; height: 44px; border-radius: 10px; display: grid; place-items: center; background: var(--c); color: var(--surface); font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; margin-inline: auto; position: relative; }
+.stack-body { background: var(--surface); border: 1px solid var(--line); border-top: 5px solid var(--c); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.stack-body h3 { color: var(--c); font-size: 1.15rem; }
+.stack-tag { font-weight: 700; }
+.stack-eg { font-size: .85rem; color: var(--muted); }
+.kv { display: grid; gap: 8px; font-size: .92rem; }
+.kv b { display: block; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+.guide-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; margin-top: 22px; }
+.ladder { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.rung { display: grid; grid-template-columns: 110px 1fr; gap: 10px; align-items: center; font-size: .93rem; }
+.rung .bar { height: 12px; border-radius: 6px; background: var(--c); }
+.system { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.sys-step { border-radius: 12px; padding: 12px; background: var(--surface-2); border: 1px dashed var(--line); font-size: .9rem; }
+.sys-step b { display: block; font-family: var(--font-display); font-size: 1rem; }
+.examples { width: 100%; border-collapse: collapse; font-size: .93rem; margin-top: 12px; }
+.examples td { padding: 9px 8px; border-top: 1px solid var(--line); vertical-align: top; }
+.examples td:first-child { font-weight: 600; }
+.principle { margin-top: 18px; padding: 16px 18px; border-radius: var(--r); background: var(--accent-soft); font-size: 1.02rem; }
+.principle strong { font-family: var(--font-display); }
+
+/* Practice */
+.practice-grid { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 18px; align-items: start; }
+.filters { display: grid; gap: 10px; }
+.field { display: grid; gap: 4px; }
+.field label, .field .label { font-size: .85rem; font-weight: 700; }
+select, input[type="text"], textarea { width: 100%; border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 12px; background: var(--surface); min-height: 42px; }
+textarea { min-height: 92px; resize: vertical; }
+select:hover, input[type="text"]:hover, textarea:hover { border-color: var(--muted); }
+.seg { display: inline-flex; background: var(--surface-2); border-radius: 999px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 6px 14px; border-radius: 999px; cursor: pointer; font-weight: 600; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+.case-list { display: flex; flex-direction: column; gap: 8px; max-height: 560px; overflow-y: auto; padding: 2px; margin-top: 12px; }
+.case-item { text-align: left; border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 10px 12px; cursor: pointer; display: grid; gap: 4px; }
+.case-item:hover { border-color: var(--accent); }
+.case-item[aria-current="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.case-item .meta { display: flex; gap: 6px; flex-wrap: wrap; font-size: .78rem; color: var(--muted); }
+.lvl { font-weight: 700; font-size: .72rem; padding: 1px 8px; border-radius: 999px; border: 1.5px solid currentColor; }
+.lvl.l1 { color: var(--good); }
+.lvl.l2 { color: var(--analytics); }
+.deck-badge { font-size: .72rem; font-weight: 700; color: var(--search); }
+.empty { padding: 18px; text-align: center; color: var(--muted); border: 1.5px dashed var(--line); border-radius: 12px; }
+
+.case-detail { display: grid; gap: 16px; }
+.case-head { display: grid; gap: 6px; }
+.case-text { font-size: 1.06rem; max-width: 68ch; }
+details.own { border: 1.5px dashed var(--line); border-radius: 12px; padding: 10px 14px; background: var(--surface-2); }
+details.own summary { cursor: pointer; font-weight: 700; }
+details.own .own-body { display: grid; gap: 10px; margin-top: 10px; }
+.inferred { font-size: .9rem; background: var(--tip-bg); color: var(--ink); border-radius: 10px; padding: 10px 12px; }
+.answer { display: grid; gap: 12px; border-top: 1px solid var(--line); padding-top: 16px; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: .95rem; cursor: pointer; }
+.check input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--accent); flex: none; }
+.hint { font-size: .85rem; color: var(--muted); }
+
+/* Feedback */
+.feedback { border-radius: var(--r); border: 2px solid var(--fb); background: var(--surface); overflow: hidden; }
+.feedback.ok { --fb: var(--good); --fbg: var(--good-bg); }
+.feedback.mid { --fb: var(--warn); --fbg: var(--warn-bg); }
+.feedback.no { --fb: var(--bad); --fbg: var(--bad-bg); }
+.fb-head { display: flex; gap: 16px; align-items: center; padding: 14px 16px; background: var(--fbg); flex-wrap: wrap; }
+.ring { width: 76px; height: 76px; flex: none; }
+.ring text { font-family: var(--font-display); font-weight: 800; fill: var(--ink); }
+.fb-title { display: grid; gap: 2px; min-width: 0; flex: 1; }
+.fb-title .verdict { font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; color: var(--fb); }
+.faces { font-size: 2rem; line-height: 1; }
+.fb-body { padding: 14px 16px; display: grid; gap: 10px; }
+.fb-lines { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.fb-lines li { display: grid; grid-template-columns: 22px 1fr; gap: 6px; font-size: .95rem; }
+.fb-lines .ic { font-weight: 800; text-align: center; }
+.fb-lines .good .ic { color: var(--good); }
+.fb-lines .warn .ic { color: var(--warn); }
+.fb-lines .bad .ic { color: var(--bad); }
+.fb-lines .tip .ic { color: var(--tip); }
+.reco { background: var(--surface-2); border-radius: 10px; padding: 10px 12px; font-size: .95rem; }
+.simpler { background: var(--warn-bg); border-radius: 10px; padding: 10px 12px; font-size: .95rem; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { font-size: .8rem; padding: 3px 10px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); }
+.chip b { font-weight: 700; }
+
+/* Quiz */
+.quiz-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 320px); gap: 18px; align-items: start; }
+.opt-list { display: grid; gap: 10px; margin-top: 14px; }
+.opt { display: flex; gap: 12px; align-items: center; border: 1.5px solid var(--line); background: var(--surface); border-radius: 12px; padding: 12px 14px; cursor: pointer; }
+.opt:hover { border-color: var(--accent); }
+.opt input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; }
+.opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.opt .pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.progress { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; margin-top: 8px; }
+.progress > div { height: 100%; background: var(--accent); }
+.qnav { display: flex; justify-content: space-between; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+.dots { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.dots button { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--line); background: var(--surface); cursor: pointer; font-weight: 700; font-size: .85rem; }
+.dots button.done { background: var(--accent-soft); border-color: var(--accent); }
+.dots button[aria-current="true"] { outline: 2px solid var(--ink); }
+.score-big { font-family: var(--font-display); font-size: 3rem; font-weight: 800; line-height: 1; }
+.review { display: grid; gap: 12px; margin-top: 18px; }
+.review-item { border: 1px solid var(--line); border-left: 6px solid var(--rc); border-radius: 12px; padding: 14px; background: var(--surface); display: grid; gap: 6px; }
+.review-item.right { --rc: var(--good); }
+.review-item.wrong { --rc: var(--bad); }
+.review-item.partial { --rc: var(--warn); }
+.ans-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: .92rem; }
+.callout { border-radius: 12px; padding: 12px 14px; background: var(--tip-bg); font-size: .92rem; }
+
+/* History */
+.hist-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; justify-content: space-between; }
+.hist-tools .filters-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.hist-tools .field { min-width: 180px; }
+.table-wrap { overflow-x: auto; margin-top: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+table.hist { width: 100%; border-collapse: collapse; font-size: .92rem; min-width: 760px; }
+table.hist th, table.hist td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+table.hist th { background: var(--surface-2); font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; }
+table.hist th button { all: unset; cursor: pointer; }
+table.hist th button:focus-visible { outline: 3px solid var(--focus); }
+table.hist td.num, table.hist th.num { text-align: right; }
+.summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
+.stat { display: grid; gap: 2px; }
+.stat .v { font-family: var(--font-display); font-size: 2rem; font-weight: 800; }
+.bars { display: grid; gap: 6px; margin-top: 8px; }
+.barrow { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 2fr) 70px; gap: 8px; align-items: center; font-size: .85rem; }
+.barrow .track { height: 10px; border-radius: 5px; background: var(--surface-2); overflow: hidden; }
+.barrow .fill { height: 100%; background: var(--accent); border-radius: 5px; }
+.barrow .lab { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.note { font-size: .88rem; color: var(--muted); border-left: 4px solid var(--line); padding-left: 12px; margin-top: 16px; display: grid; gap: 4px; }
+.confirm { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; background: var(--bad-bg); padding: 8px 12px; border-radius: 10px; }
+
+/* Profile drawer + toast */
+.profile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); padding: 18px; margin-bottom: 14px; display: grid; gap: 12px; }
+.profile-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-weight: 600; z-index: 30; max-width: calc(100% - 32px); }
+.banner { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--line); padding: 10px 14px; border-radius: 12px; margin-bottom: 16px; font-size: .95rem; }
+footer { padding-block: 20px 30px; font-size: .85rem; color: var(--muted); }
+
+@media (max-width: 980px) {
+  .timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .timeline::before { display: none; }
+  .practice-grid, .quiz-grid, .guide-grid { grid-template-columns: minmax(0, 1fr); }
+  .case-list { max-height: 320px; }
+  .profile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .summary-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .timeline, .profile-grid, .system { grid-template-columns: minmax(0, 1fr); }
+  .rung { grid-template-columns: 90px 1fr; }
+  .panel { padding: 16px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .feedback, .review-item { animation: rise .35s ease-out both; }
+  @keyframes rise { from { transform: translateY(6px); opacity: .6; } to { transform: none; opacity: 1; } }
+}
+</style>
+
+<header class="wrap top">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 46 46" aria-hidden="true">
+      <rect x="2" y="30" width="42" height="12" rx="4" fill="var(--chat)"/>
+      <rect x="6" y="20" width="34" height="9" rx="4" fill="var(--search)"/>
+      <rect x="10" y="11" width="26" height="8" rx="4" fill="var(--auto)"/>
+      <rect x="14" y="4" width="18" height="6" rx="3" fill="var(--agent)"/>
+    </svg>
+    <div>
+      <h1>AI Stack Practice Lab</h1>
+      <p>Applying AI Decision Models Across Functions · IIT Madras</p>
+    </div>
+  </div>
+  <div class="top-actions">
+    <button class="btn" id="profileBtn" aria-expanded="false" aria-controls="profilePanel">
+      <span aria-hidden="true">👤</span><span id="profileLabel">Set up your profile</span>
+    </button>
+    <button class="btn ghost" id="themeBtn" aria-label="Switch theme"><span id="themeIcon" aria-hidden="true">🌙</span><span id="themeText">Dark theme</span></button>
+  </div>
+</header>
+
+<div class="wrap">
+  <form class="profile" id="profilePanel" hidden>
+    <div>
+      <h3>Your learner profile</h3>
+      <p class="hint">Your name and details appear with your quiz score in the class history. You can change them any time.</p>
+    </div>
+    <div class="profile-grid">
+      <div class="field"><label for="pfName">Name</label><input type="text" id="pfName" maxlength="60" autocomplete="name" required></div>
+      <div class="field"><label for="pfBatch">Batch or roll number (optional)</label><input type="text" id="pfBatch" maxlength="30"></div>
+      <div class="field"><label for="pfInd">Industry</label><select id="pfInd"></select></div>
+      <div class="field"><label for="pfExp">Work experience</label><select id="pfExp"></select></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn primary" type="submit">Save profile</button>
+      <button class="btn ghost" type="button" id="profileCancel">Close</button>
+    </div>
+  </form>
+</div>
+
+<nav class="tabbar" aria-label="Sections">
+  <div class="wrap tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-guide" aria-controls="guide" data-tab="guide">Stack Guide</button>
+    <button class="tab" role="tab" id="tab-practice" aria-controls="practice" data-tab="practice">Practice</button>
+    <button class="tab" role="tab" id="tab-quiz" aria-controls="quiz" data-tab="quiz">Quiz</button>
+    <button class="tab" role="tab" id="tab-history" aria-controls="history" data-tab="history">Score History</button>
+  </div>
+</nav>
+
+<main>
+  <!-- STACK GUIDE -->
+  <section class="bed guide" id="guide" role="tabpanel" aria-labelledby="tab-guide" hidden>
+    <div class="wrap">
+      <div class="bed-head">
+        <div>
+          <div class="eyebrow">Use layer, part 1</div>
+          <h2>The Business AI Stack: five core categories</h2>
+          <p>Each category suits a different kind of work. Pick the one that matches what the task really needs, and combine them when one alone isn't enough.</p>
+        </div>
+        <button class="btn primary" data-goto="practice">Start practising →</button>
+      </div>
+      <div class="timeline" id="stackCards"></div>
+
+      <div class="principle"><strong>Choose the least complex tool that meets the task's accuracy, control, cost, speed and compliance needs.</strong> Start simple, and add complexity only when the task needs it.</div>
+
+      <div class="guide-grid">
+        <div class="panel">
+          <h3>Complexity and governance increase as you go up the stack</h3>
+          <p class="hint" style="margin-top:4px">More capability brings more setup, more cost and a greater need for oversight.</p>
+          <div class="ladder" id="ladder"></div>
+        </div>
+        <div class="panel">
+          <h3>Systems beat tools</h3>
+          <p class="hint" style="margin-top:4px">A reliable AI solution usually combines these parts rather than relying on one tool.</p>
+          <div class="system">
+            <div class="sys-step"><b>Knowledge source</b>Verified documents and data.</div>
+            <div class="sys-step"><b>Reasoning layer</b>Drafts, explains and analyses.</div>
+            <div class="sys-step"><b>Workflow step</b>Runs the process reliably.</div>
+            <div class="sys-step"><b>Human approval</b>A named person signs off on what matters.</div>
+          </div>
+          <p class="hint" style="margin-top:12px">Your tool decision should also reflect the business function, impact, risk, governance and human oversight.</p>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:18px">
+        <h3>Worked examples from the session</h3>
+        <div style="overflow-x:auto">
+          <table class="examples" id="deckExamples"></table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRACTICE -->
+  <section class="bed practice" id="practice" role="tabpanel" aria-labelledby="tab-practice" hidden>
+    <div class="wrap">
+      <div class="banner" id="newHere"><span aria-hidden="true">🌱</span><span>New to the five categories? The two-minute <button class="btn small ghost" data-goto="guide">Stack Guide</button> covers what each one is for.</span></div>
+      <div class="bed-head">
+        <div>
+          <div class="eyebrow">Practice</div>
+          <h2>Choose the right stack for a real use case</h2>
+          <p>Pick a use case, choose a single category, a combination or your own tools, and get instant feedback. Practise as often as you like. Nothing here is recorded.</p>
+        </div>
+      </div>
+      <div class="practice-grid">
+        <div class="panel">
+          <div class="filters">
+            <div class="field"><label for="fInd">Industry</label><select id="fInd"></select></div>
+            <div class="field"><label for="fFn">Business function</label><select id="fFn"></select></div>
+            <div class="field"><span class="label" id="lvlLabel">Level</span>
+              <div class="seg" role="group" aria-labelledby="lvlLabel" id="lvlSeg">
+                <button type="button" data-lvl="all" aria-pressed="true">All</button>
+                <button type="button" data-lvl="1" aria-pressed="false">Level 1</button>
+                <button type="button" data-lvl="2" aria-pressed="false">Level 2</button>
+              </div>
+            </div>
+          </div>
+          <div class="hint" style="margin-top:6px">Level 1 is for beginners: one clear need. Level 2 is more challenging: combined needs, higher stakes or a tempting over-complex option.</div>
+          <div class="hint" id="caseCount" style="margin-top:6px"></div>
+          <div class="case-list" id="caseList"></div>
+        </div>
+
+        <div class="panel case-detail">
+          <div class="case-head" id="caseHead"></div>
+
+          <details class="own" id="ownBox">
+            <summary>Or enter your own use case</summary>
+            <div class="own-body">
+              <div class="field"><label for="ownText">Describe the task in a sentence or two</label>
+                <textarea id="ownText" maxlength="600" placeholder="e.g. Every month our plant managers need a summary of downtime trends with likely causes"></textarea></div>
+              <div class="field"><label for="ownInd">Industry</label><select id="ownInd"></select></div>
+              <div><button class="btn" type="button" id="ownUse">Use this case</button></div>
+            </div>
+          </details>
+          <div class="inferred" id="inferred" hidden></div>
+
+          <form class="answer" id="answerForm">
+            <div class="field"><span class="label" id="modeLabel">Answer with</span>
+              <div class="seg" role="group" aria-labelledby="modeLabel" id="modeSeg">
+                <button type="button" data-mode="single" aria-pressed="true">One category</button>
+                <button type="button" data-mode="combo" aria-pressed="false">A combination</button>
+                <button type="button" data-mode="free" aria-pressed="false">My own tools</button>
+              </div>
+            </div>
+            <div class="field" data-for="single"><label for="selSingle">Single tool category</label><select id="selSingle"></select></div>
+            <div class="field" data-for="combo" hidden><label for="selCombo">Combination of categories</label><select id="selCombo"></select></div>
+            <div class="field" data-for="free" hidden><label for="freeText">Your preferred tool or technology stack</label>
+              <textarea id="freeText" maxlength="400" placeholder="e.g. NotebookLM over the policy library, Claude to draft replies, HR signs off"></textarea>
+              <span class="hint">Name categories or real tools (Claude Projects, Glean, Zapier, n8n, Power BI Copilot, LangGraph…). Mention a review or sign-off if you'd add one.</span></div>
+            <label class="check" id="gateRow"><input type="checkbox" id="gateBox"><span>Include a human approval or review step <span class="hint">(someone checks before anything high-impact happens)</span></span></label>
+            <div><button class="btn primary" type="submit">Check my choice</button></div>
+          </form>
+
+          <div id="feedback" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="bed quiz" id="quiz" role="tabpanel" aria-labelledby="tab-quiz" hidden>
+    <div class="wrap">
+      <div class="bed-head">
+        <div>
+          <div class="eyebrow">Optional end-of-practice quiz</div>
+          <h2>Check your confidence</h2>
+          <p>For each use case, choose the stack you would recommend. Assume a sensible human approval step is in place wherever the stakes call for one. Answers and explanations appear after you submit.</p>
+        </div>
+      </div>
+      <div id="quizRoot"></div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="bed history" id="history" role="tabpanel" aria-labelledby="tab-history" hidden>
+    <div class="wrap">
+      <div class="bed-head">
+        <div>
+          <div class="eyebrow">Score history</div>
+          <h2>Quiz participants and scores</h2>
+          <p>Every completed quiz is listed here. Filter by industry or experience to see how each group is doing.</p>
+        </div>
+        <div class="seg" role="group" aria-label="History source" id="srcSeg">
+          <button type="button" data-src="class" aria-pressed="true">Class board</button>
+          <button type="button" data-src="local" aria-pressed="false">This device</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="hist-tools">
+          <div class="filters-row">
+            <div class="field"><label for="hInd">Industry</label><select id="hInd"></select></div>
+            <div class="field"><label for="hExp">Work experience</label><select id="hExp"></select></div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn small" id="dlCsv">Download CSV</button>
+            <label class="btn small" for="importCsv" style="cursor:pointer">Import CSV</label>
+            <input type="file" id="importCsv" accept=".csv,text/csv" hidden>
+            <button class="btn small danger" id="clearLocal">Clear this device</button>
+          </div>
+        </div>
+        <div id="clearConfirm" hidden></div>
+        <div class="summary-grid" id="summary"></div>
+        <div class="table-wrap"><table class="hist" id="histTable"></table></div>
+        <div class="note" id="storageNote"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">Based on the IITM EGAIBA Week 2 session "From Using AI to Choosing &amp; Controlling AI". The feedback is for learning and practice. Real deployments need your organisation's own governance review.</footer>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+/*DATA*/
+</script>
+<script>
+(function () {
+  "use strict";
+  const $ = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+  };
+  const use = name => (window.claude && typeof window.claude.use === "function") ? window.claude.use(name).catch(() => null) : Promise.resolve(null);
+  const pill = c => `<span class="pill cat-${c}"><span class="dot"></span>${esc(CATS[c].short)}</span>`;
+  const pills = list => sortCats(list).map(pill).join(" ");
+  const fmtDate = iso => { try { return new Date(iso).toLocaleString(undefined, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }); } catch (e) { return iso; } };
+
+  let toastTimer;
+  function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 3200); }
+
+  /* ---------- Theme ---------- */
+  function effectiveTheme() {
+    const set = document.documentElement.getAttribute("data-theme");
+    if (set) return set;
+    return window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  function paintThemeBtn() {
+    const dark = effectiveTheme() === "dark";
+    $("#themeIcon").textContent = dark ? "☀️" : "🌙";
+    $("#themeText").textContent = dark ? "Light theme" : "Dark theme";
+  }
+  const savedTheme = store.get("aistack.theme", null);
+  if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+  $("#themeBtn").addEventListener("click", () => {
+    const next = effectiveTheme() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    store.set("aistack.theme", next);
+    paintThemeBtn();
+  });
+  if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", paintThemeBtn);
+  paintThemeBtn();
+
+  /* ---------- Tabs ---------- */
+  const TABS = ["guide", "practice", "quiz", "history"];
+  function showTab(name, focus) {
+    if (!TABS.includes(name)) name = "practice";
+    TABS.forEach(t => {
+      $("#" + t).hidden = t !== name;
+      const b = $("#tab-" + t);
+      b.setAttribute("aria-selected", String(t === name));
+      b.tabIndex = t === name ? 0 : -1;
+    });
+    store.set("aistack.tab", name);
+    if (name === "history") renderHistory();
+    if (focus) $("#tab-" + name).focus();
+  }
+  $$(".tab").forEach(b => {
+    b.addEventListener("click", () => showTab(b.dataset.tab));
+    b.addEventListener("keydown", e => {
+      const i = TABS.indexOf(b.dataset.tab);
+      if (e.key === "ArrowRight") showTab(TABS[(i + 1) % 4], true);
+      if (e.key === "ArrowLeft") showTab(TABS[(i + 3) % 4], true);
+    });
+  });
+  document.addEventListener("click", e => {
+    const g = e.target.closest("[data-goto]");
+    if (g) { showTab(g.dataset.goto); window.scrollTo({ top: 0 }); }
+  });
+
+  /* ---------- Profile ---------- */
+  let profile = store.get("aistack.profile", null);
+  const fillSelect = (sel, items, first) => { sel.innerHTML = (first ? `<option value="">${esc(first)}</option>` : "") + items.map(i => `<option value="${esc(i)}">${esc(i)}</option>`).join(""); };
+  fillSelect($("#pfInd"), INDUSTRIES, "Choose your industry");
+  fillSelect($("#pfExp"), EXPERIENCE, "Choose a range");
+  function paintProfile() {
+    $("#profileLabel").textContent = profile && profile.name ? profile.name + (profile.batch ? " · " + profile.batch : "") : "Set up your profile";
+  }
+  function openProfile(open) {
+    const p = $("#profilePanel");
+    p.hidden = !open;
+    $("#profileBtn").setAttribute("aria-expanded", String(open));
+    if (open) {
+      $("#pfName").value = profile?.name || "";
+      $("#pfBatch").value = profile?.batch || "";
+      $("#pfInd").value = profile?.industry || "";
+      $("#pfExp").value = profile?.experience || "";
+      $("#pfName").focus();
+    }
+  }
+  $("#profileBtn").addEventListener("click", () => openProfile($("#profilePanel").hidden));
+  $("#profileCancel").addEventListener("click", () => openProfile(false));
+  $("#profilePanel").addEventListener("submit", e => {
+    e.preventDefault();
+    const name = $("#pfName").value.trim();
+    if (!name) { $("#pfName").focus(); return; }
+    profile = { name, batch: $("#pfBatch").value.trim(), industry: $("#pfInd").value || "Other", experience: $("#pfExp").value || "unknown" };
+    store.set("aistack.profile", profile);
+    paintProfile(); openProfile(false); toast("Profile saved. Welcome, " + name + "!");
+    if (!state.indTouched) { $("#fInd").value = PRACTICE_INDUSTRIES.includes(profile.industry) ? profile.industry : ""; renderCaseList(); }
+    renderQuiz();
+  });
+  paintProfile();
+
+  /* ---------- Stack guide ---------- */
+  $("#stackCards").innerHTML = CAT_ORDER.map(k => {
+    const c = CATS[k];
+    return `<article class="stack-card cat-${k}">
+      <div class="stack-num" aria-hidden="true">${c.n}</div>
+      <div class="stack-body">
+        <h3>${esc(c.name)}</h3>
+        <div class="stack-tag">${esc(c.tag)}</div>
+        <div class="stack-eg">e.g. ${esc(c.examples)}</div>
+        <div class="kv">
+          <div><b>Use it when</b>${esc(c.use)}</div>
+          <div><b>Strengths</b>${esc(c.strengths)}</div>
+          <div><b>Watch out</b>${esc(c.watch)}</div>
+        </div>
+      </div></article>`;
+  }).join("");
+  const ladder = [["chat", 20, "Low setup, fastest to try"], ["search", 40, "Curated documents to maintain"], ["auto", 58, "Designed, tested workflows"], ["analytics", 72, "Clean, connected data"], ["agent", 95, "Permissions, logs, checkpoints"]];
+  $("#ladder").innerHTML = ladder.map(([k, w, t]) => `<div class="rung cat-${k}"><span class="pill cat-${k}">${esc(CATS[k].short)}</span><div><div class="bar" style="width:${w}%"></div><span class="hint">${esc(t)}</span></div></div>`).join("");
+  $("#deckExamples").innerHTML = CASES.filter(c => c.deck).map(c => `<tr><td>${esc(c.title)}</td><td>${pills(bestOf(c))}${c.gate ? ` <span class="hint">+ ${esc(c.gate)}</span>` : ""}</td></tr>`).join("");
+
+  /* ---------- Practice ---------- */
+  const state = { lvl: "all", caseId: CASES[0].id, mode: "single", custom: null, indTouched: false };
+  const FUNCTIONS = Array.from(new Set(CASES.map(c => c.fn))).sort();
+  fillSelect($("#fInd"), PRACTICE_INDUSTRIES, "All industries");
+  fillSelect($("#fFn"), FUNCTIONS, "All functions");
+  fillSelect($("#ownInd"), PRACTICE_INDUSTRIES, "");
+  $("#ownInd").value = "Other";
+  $("#selSingle").innerHTML = `<option value="">Choose one category…</option>` + CAT_ORDER.map(k => `<option value="${k}">${CATS[k].n}. ${esc(CATS[k].name)}: ${esc(CATS[k].tag)}</option>`).join("");
+  const combos = allStacks().filter(s => s.length > 1);
+  $("#selCombo").innerHTML = `<option value="">Choose a combination…</option>` +
+    [2, 3].map(n => `<optgroup label="${n === 2 ? "Two categories" : "Three categories"}">` + combos.filter(s => s.length === n).map(s => `<option value="${s.join("+")}">${esc(stackLabel(s))}</option>`).join("") + `</optgroup>`).join("");
+  if (profile && PRACTICE_INDUSTRIES.includes(profile.industry)) $("#fInd").value = profile.industry;
+
+  function filteredCases() {
+    const ind = $("#fInd").value, fn = $("#fFn").value;
+    return CASES.filter(c => (!ind || c.ind === ind) && (!fn || c.fn === fn) && (state.lvl === "all" || String(c.lvl) === state.lvl));
+  }
+  function currentCase() { return state.custom && state.caseId === "custom" ? state.custom : CASES.find(c => c.id === state.caseId); }
+
+  function renderCaseList() {
+    const list = filteredCases();
+    $("#caseCount").textContent = list.length + (list.length === 1 ? " use case" : " use cases");
+    $("#caseList").innerHTML = list.length ? list.map(c => `
+      <button type="button" class="case-item" data-id="${c.id}" aria-current="${c.id === state.caseId}">
+        <span style="font-weight:700">${esc(c.title)}</span>
+        <span class="meta"><span class="lvl l${c.lvl}">L${c.lvl}</span><span>${esc(c.ind)}</span><span>·</span><span>${esc(c.fn)}</span>${c.deck ? '<span class="deck-badge">From the session</span>' : ""}</span>
+      </button>`).join("") : `<div class="empty">No use cases match these filters. Try "All industries" or another level.</div>`;
+  }
+  $("#caseList").addEventListener("click", e => {
+    const b = e.target.closest(".case-item");
+    if (!b) return;
+    state.caseId = b.dataset.id; state.custom = null;
+    $("#inferred").hidden = true;
+    renderCaseList(); renderCaseHead(); clearFeedback();
+  });
+  $("#fInd").addEventListener("change", () => { state.indTouched = true; renderCaseList(); });
+  $("#fFn").addEventListener("change", renderCaseList);
+  $("#lvlSeg").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    state.lvl = b.dataset.lvl;
+    $$("#lvlSeg button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    renderCaseList();
+  });
+
+  function renderCaseHead() {
+    const c = currentCase();
+    $("#caseHead").innerHTML = `
+      <div class="meta" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        ${c.custom ? '<span class="lvl l2">Your case</span>' : `<span class="lvl l${c.lvl}">Level ${c.lvl}</span>`}
+        <span class="hint">${esc(c.ind)} · ${esc(c.fn)}</span>${c.deck ? '<span class="deck-badge">From the session</span>' : ""}
+      </div>
+      <h2>${esc(c.title)}</h2>
+      <p class="case-text">${esc(c.text)}</p>`;
+  }
+
+  function clearFeedback() { $("#feedback").innerHTML = ""; }
+
+  $("#ownUse").addEventListener("click", () => {
+    const text = $("#ownText").value.trim();
+    if (text.length < 12) { toast("Add a sentence or two about the task first."); $("#ownText").focus(); return; }
+    const c = inferCase(text, $("#ownInd").value);
+    state.custom = c; state.caseId = "custom";
+    renderCaseList(); renderCaseHead(); clearFeedback();
+    const reasons = Object.entries(c.signals).map(([k, w]) => `${pill(k)} <span class="hint">(“${esc(w.slice(0, 3).join("”, “"))}”)</span>`).join(" ");
+    $("#inferred").innerHTML = c.confident
+      ? `<strong>We read this as needing:</strong> ${pills(c.req)}${c.opt.length ? ` <span class="hint">with ${esc(stackLabel(c.opt))} as optional extras</span>` : ""}.<br><span class="hint">Signals we picked up: </span>${reasons}${c.gate ? `<br><span class="hint">The task touches higher-stakes areas (${esc(c.risks.slice(0, 3).join(", ") || "multi-system actions")}), so a human approval step is expected.</span>` : ""}<br><span class="hint">This is a keyword-based reading. Add detail (data, documents, repetition, systems) for sharper feedback.</span>`
+      : `<strong>We couldn't spot strong signals</strong>, so we're treating this as a drafting task (Chat). Mention whether it involves documents, data, repeating steps or several systems for sharper feedback.`;
+    $("#inferred").hidden = false;
+    $("#answerForm").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+
+  $("#modeSeg").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    state.mode = b.dataset.mode;
+    $$("#modeSeg button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    $$("#answerForm [data-for]").forEach(f => { f.hidden = f.dataset.for !== state.mode; });
+    $("#gateRow").hidden = state.mode === "free";
+  });
+
+  function ringSvg(score, cls) {
+    const r = 32, C = 2 * Math.PI * r, len = C * score / 10;
+    const color = cls === "ok" ? "var(--good)" : cls === "mid" ? "var(--warn)" : "var(--bad)";
+    return `<svg class="ring" viewBox="0 0 76 76" role="img" aria-label="Score ${score} out of 10">
+      <circle cx="38" cy="38" r="${r}" fill="none" stroke="var(--line)" stroke-width="7"/>
+      <circle cx="38" cy="38" r="${r}" fill="none" stroke="${color}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${len} ${C}" transform="rotate(-90 38 38)"/>
+      <text x="38" y="44" text-anchor="middle" font-size="20">${score}<tspan font-size="11" dx="1">/10</tspan></text></svg>`;
+  }
+  const ICON = { good: "✓", warn: "!", bad: "✕", tip: "→" };
+
+  function renderFeedback(c, res, readNote) {
+    const cls = res.score >= 8 ? "ok" : res.score >= 5 ? "mid" : "no";
+    const faces = res.positive ? `<span class="faces" role="img" aria-label="Smiling face with thumbs up">😊👍</span>` : `<span class="faces" role="img" aria-label="Smiling face with thumbs down">🙂👎</span>`;
+    const lead = res.positive
+      ? (res.score >= 9 ? "Great choice. This fits the task well." : "Good thinking. This works, with a refinement or two.")
+      : res.score >= 5 ? "Better luck next time! You're close, and the notes below show what to adjust."
+      : "Better luck next time! This stack doesn't fit the task yet. The notes below show a better route.";
+    const chips = considerations(c).map(k => `<span class="chip"><b>${esc(k.k)}</b>: ${esc(k.why)}</span>`).join("");
+    $("#feedback").innerHTML = `
+      <div class="feedback ${cls}">
+        <div class="fb-head">${ringSvg(res.score, cls)}
+          <div class="fb-title"><span class="verdict">${esc(res.verdict)}</span><span>${esc(lead)}</span></div>${faces}</div>
+        <div class="fb-body">
+          <div><span class="hint">You chose:</span> ${pills(res.stack)}${readNote ? ` <span class="hint">${readNote}</span>` : ""}</div>
+          <ul class="fb-lines">${res.lines.map(([t, x]) => `<li class="${t}"><span class="ic" aria-hidden="true">${ICON[t]}</span><span>${esc(x)}</span></li>`).join("")}</ul>
+          ${res.simpler ? `<div class="simpler"><strong>Simpler option:</strong> ${esc(res.simpler.replace(/^Start simpler: /, ""))}</div>` : ""}
+          <div class="reco"><strong>Recommended system:</strong> ${pills(res.best)} <br>${esc(c.sys)}</div>
+          ${chips ? `<div class="chips" aria-label="What matters here">${chips}</div>` : ""}
+        </div>
+      </div>`;
+  }
+
+  $("#answerForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const c = currentCase();
+    let picks = [], gate = $("#gateBox").checked, readNote = "";
+    if (state.mode === "single") {
+      const v = $("#selSingle").value;
+      if (!v) { toast("Choose a category first."); $("#selSingle").focus(); return; }
+      picks = [v];
+    } else if (state.mode === "combo") {
+      const v = $("#selCombo").value;
+      if (!v) { toast("Choose a combination first."); $("#selCombo").focus(); return; }
+      picks = v.split("+");
+    } else {
+      const t = $("#freeText").value.trim();
+      if (!t) { toast("Type your preferred tools or stack first."); $("#freeText").focus(); return; }
+      const parsed = parseStack(t);
+      if (!parsed.cats.length) {
+        $("#feedback").innerHTML = `<div class="callout"><strong>We couldn't match that to the five categories yet.</strong> Try naming a category (Chat, Search, Automation, Analytics, Agent) or a tool such as Claude, NotebookLM, Zapier, Power BI Copilot or LangGraph.</div>`;
+        return;
+      }
+      picks = parsed.cats; gate = parsed.gate;
+      const seen = parsed.hits.slice(0, 4).map(([term, cat]) => `“${esc(term)}” → ${esc(CATS[cat].short)}`).join(", ");
+      readNote = `(we read ${seen}${gate ? ", plus a human review step" : ""})`;
+    }
+    renderFeedback(c, evaluate(c, picks, gate), readNote);
+  });
+
+  renderCaseList(); renderCaseHead();
+
+  /* ---------- History storage ---------- */
+  let localRuns = store.get("aistack.history", []);
+  let sharedRuns = null;          // null = class board not available in this view
+  let sharedState = "loading";    // loading | live | readonly | off
+  let db = null, uid = null;
+  let histSrc = "class", sortKey = "date", sortDir = -1;
+
+  async function initShared() {
+    const [d, u] = await Promise.all([use("db"), use("user")]);
+    if (!d) { sharedState = "off"; setSrc("local"); return; }
+    db = d;
+    try { uid = u ? await u.id() : null; } catch (e) { uid = null; }
+    let canWrite = null;
+    try { canWrite = u ? await u.can("data.write") : null; } catch (e) { canWrite = null; }
+    sharedState = uid && canWrite !== false ? "live" : "readonly";
+    sharedRuns = [];
+    db.collection("attempts").onSnapshot(snap => {
+      const out = [];
+      snap.docs.forEach(doc => {
+        const d = doc.data() || {};
+        (Array.isArray(d.runs) ? d.runs : []).forEach(r => out.push(Object.assign({}, r, { name: d.name || r.name, batch: d.batch ?? r.batch, industry: d.industry || r.industry, experience: d.experience || r.experience })));
+      });
+      sharedRuns = out;
+      renderHistory();
+    }, () => { sharedState = "off"; sharedRuns = null; setSrc("local"); });
+    renderHistory();
+  }
+
+  let sharedWriting = Promise.resolve();
+  function saveShared(run) {
+    if (!db || !uid || sharedState !== "live") return Promise.resolve(false);
+    sharedWriting = sharedWriting.then(async () => {
+      const ref = db.doc("attempts/" + uid);
+      const snap = await ref.get();
+      const prev = snap.exists && Array.isArray(snap.data().runs) ? snap.data().runs.slice() : [];
+      prev.push(run);
+      await ref.set({ name: profile.name, batch: profile.batch || "", industry: profile.industry, experience: profile.experience, updated: new Date().toISOString(), runs: prev.slice(-50) });
+      return true;
+    }).catch(err => {
+      if (err && err.code === "invalid_argument") sharedState = "readonly";
+      return false;
+    });
+    return sharedWriting;
+  }
+
+  function recordRun(run) {
+    localRuns.push(run);
+    const ok = store.set("aistack.history", localRuns);
+    return saveShared(run).then(shared => ({ local: ok, shared }));
+  }
+
+  /* ---------- Downloads ---------- */
+  async function saveFile(filename, text, mime) {
+    const dl = await use("downloads");
+    if (dl) {
+      try { await dl.save({ filename, data: text }); toast("Saved " + filename); return; }
+      catch (err) { if (err && err.code === "declined") { toast("Download cancelled."); return; } if (err && err.code === "rate_limited") { toast("A download prompt is already open."); return; } }
+    }
+    try {
+      const url = URL.createObjectURL(new Blob([text], { type: mime }));
+      const a = document.createElement("a"); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } catch (e) { toast("Downloads aren't available in this view."); }
+  }
+  const slug = s => String(s || "learner").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "learner";
+
+  /* ---------- Quiz ---------- */
+  let quiz = null; // {size, level, items:[{id, options:[[..]], choice:null}], i, done, run}
+  let quizSize = 5, quizLevel = "mix";
+
+  function seeded(seed) { let s = seed >>> 0; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+
+  function buildQuiz() {
+    const rand = seeded(Date.now() ^ Math.floor(Math.random() * 1e9));
+    let pool = CASES.filter(c => quizLevel === "mix" || String(c.lvl) === quizLevel);
+    pool = pool.slice();
+    for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    if (quizLevel === "mix") {
+      const l1 = pool.filter(c => c.lvl === 1), l2 = pool.filter(c => c.lvl === 2);
+      const n1 = Math.ceil(quizSize / 2);
+      pool = l1.slice(0, n1).concat(l2.slice(0, quizSize - n1));
+    }
+    const items = pool.slice(0, quizSize).map(c => ({ id: c.id, options: quizOptions(c, rand), choice: null }));
+    return { size: items.length, level: quizLevel, items, i: 0, done: false, run: null };
+  }
+
+  function renderQuiz() {
+    const root = $("#quizRoot");
+    if (!quiz) {
+      const p = profile;
+      root.innerHTML = `
+        <div class="quiz-grid">
+          <div class="panel" style="display:grid;gap:16px">
+            <h3>Set up your quiz</h3>
+            ${p && p.name ? `<p>Taking the quiz as <strong>${esc(p.name)}</strong>${p.batch ? " (" + esc(p.batch) + ")" : ""} · ${esc(p.industry)} · ${esc(p.experience)}. <button class="btn small ghost" type="button" id="qEditProfile">Change</button></p>`
+              : `<div class="callout">Please <button class="btn small" type="button" id="qEditProfile">set up your profile</button> first, so your score appears with your name in the history.</div>`}
+            <div class="field"><span class="label" id="qsLabel">Number of use cases</span>
+              <div class="seg" role="group" aria-labelledby="qsLabel" id="qSize">
+                <button type="button" data-n="5" aria-pressed="${quizSize === 5}">5 questions</button>
+                <button type="button" data-n="10" aria-pressed="${quizSize === 10}">10 questions</button>
+              </div></div>
+            <div class="field"><span class="label" id="qlLabel">Difficulty</span>
+              <div class="seg" role="group" aria-labelledby="qlLabel" id="qLevel">
+                <button type="button" data-l="mix" aria-pressed="${quizLevel === "mix"}">Mixed</button>
+                <button type="button" data-l="1" aria-pressed="${quizLevel === "1"}">Level 1</button>
+                <button type="button" data-l="2" aria-pressed="${quizLevel === "2"}">Level 2</button>
+              </div></div>
+            <div><button class="btn primary" id="qStart" ${p && p.name ? "" : "disabled"}>Start quiz</button></div>
+          </div>
+          <div class="panel">
+            <h3>How scoring works</h3>
+            <ul class="fb-lines" style="margin-top:10px">
+              <li class="good"><span class="ic">✓</span><span>Each answer earns its rubric score out of 10. The best fit earns 10.</span></li>
+              <li class="tip"><span class="ic">→</span><span>Answers that score 8 or more count as correct.</span></li>
+              <li class="warn"><span class="ic">!</span><span>Over-complex stacks lose points, even when they could technically do the job.</span></li>
+              <li class="good"><span class="ic">✓</span><span>You can download your answers and explanations at the end.</span></li>
+            </ul>
+          </div>
+        </div>`;
+      $("#qEditProfile").addEventListener("click", () => { openProfile(true); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      $("#qSize").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { quizSize = +b.dataset.n; renderQuiz(); } });
+      $("#qLevel").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { quizLevel = b.dataset.l; renderQuiz(); } });
+      $("#qStart").addEventListener("click", () => { quiz = buildQuiz(); renderQuiz(); });
+      return;
+    }
+    if (quiz.done) return renderResults();
+    const it = quiz.items[quiz.i], c = CASES.find(x => x.id === it.id);
+    const answered = quiz.items.filter(x => x.choice !== null).length;
+    root.innerHTML = `
+      <div class="quiz-grid">
+        <div class="panel">
+          <div class="eyebrow">Question ${quiz.i + 1} of ${quiz.size}</div>
+          <div class="progress" aria-hidden="true"><div style="width:${100 * answered / quiz.size}%"></div></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px"><span class="lvl l${c.lvl}">Level ${c.lvl}</span><span class="hint">${esc(c.ind)} · ${esc(c.fn)}</span></div>
+          <h2 style="margin-top:6px">${esc(c.title)}</h2>
+          <p class="case-text" style="margin-top:6px">${esc(c.text)}</p>
+          <fieldset style="border:0;padding:0;margin:0">
+            <legend class="label" style="font-weight:700;margin-top:14px">Which stack would you recommend?</legend>
+            <div class="opt-list">${it.options.map((s, k) => `
+              <label class="opt"><input type="radio" name="qopt" value="${k}" ${it.choice === k ? "checked" : ""}><span class="pills">${pills(s)}</span></label>`).join("")}</div>
+          </fieldset>
+          <div class="qnav">
+            <button class="btn" id="qPrev" ${quiz.i === 0 ? "disabled" : ""}>← Previous</button>
+            ${quiz.i < quiz.size - 1 ? `<button class="btn primary" id="qNext">Next →</button>` : `<button class="btn primary" id="qSubmit" ${answered < quiz.size ? "disabled" : ""}>Submit quiz</button>`}
+          </div>
+          ${quiz.i === quiz.size - 1 && answered < quiz.size ? `<p class="hint" style="margin-top:8px">Answer all ${quiz.size} questions to submit. ${quiz.size - answered} left.</p>` : ""}
+        </div>
+        <div class="panel">
+          <h3>Your progress</h3>
+          <p class="hint">${answered} of ${quiz.size} answered</p>
+          <div class="dots">${quiz.items.map((x, k) => `<button type="button" data-k="${k}" class="${x.choice !== null ? "done" : ""}" aria-current="${k === quiz.i}" aria-label="Question ${k + 1}${x.choice !== null ? ", answered" : ""}">${k + 1}</button>`).join("")}</div>
+          <div style="margin-top:16px"><button class="btn small ghost" id="qQuit">Leave quiz</button></div>
+        </div>
+      </div>`;
+    $$('input[name="qopt"]').forEach(r => r.addEventListener("change", () => { it.choice = +r.value; renderQuizKeepFocus(r.value); }));
+    $("#qPrev").addEventListener("click", () => { quiz.i--; renderQuiz(); });
+    $("#qNext")?.addEventListener("click", () => { quiz.i++; renderQuiz(); });
+    $("#qSubmit")?.addEventListener("click", submitQuiz);
+    $(".dots").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { quiz.i = +b.dataset.k; renderQuiz(); } });
+    $("#qQuit").addEventListener("click", () => { quiz = null; renderQuiz(); });
+  }
+  function renderQuizKeepFocus(v) { renderQuiz(); const r = document.querySelector(`input[name="qopt"][value="${v}"]`); if (r) r.focus(); }
+
+  function submitQuiz() {
+    let total = 0, correct = 0;
+    quiz.items.forEach(it => {
+      const c = CASES.find(x => x.id === it.id);
+      const res = evaluate(c, it.options[it.choice], true);
+      it.score = res.score; it.res = res;
+      total += res.score; if (res.score >= 8) correct++;
+    });
+    const pct = Math.round(100 * total / (10 * quiz.size));
+    quiz.run = {
+      id: "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      name: profile.name, batch: profile.batch || "", industry: profile.industry, experience: profile.experience,
+      date: new Date().toISOString(), questions: quiz.size, level: quiz.level === "mix" ? "Mixed" : "Level " + quiz.level,
+      correct, points: total, pct
+    };
+    quiz.done = true;
+    renderResults();
+    recordRun(quiz.run).then(({ local, shared }) => {
+      const msg = shared ? "Score saved to the class board." : local ? "Score saved on this device." : "Score shown, but it couldn't be saved here. Please download it.";
+      const el = $("#saveStatus"); if (el) el.textContent = msg;
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function renderResults() {
+    const r = quiz.run;
+    const great = r.pct >= 70;
+    $("#quizRoot").innerHTML = `
+      <div class="panel" style="display:grid;gap:12px">
+        <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center">
+          <div><div class="eyebrow">Your score</div><div class="score-big num">${r.pct}%</div></div>
+          <div style="flex:1;min-width:220px">
+            <p style="font-size:1.1rem"><strong>${r.correct} of ${r.questions}</strong> well-chosen stacks · ${r.points} of ${r.questions * 10} points</p>
+            <p>${great ? `<span class="faces" role="img" aria-label="Smiling face with thumbs up">😊👍</span> Well done, ${esc(r.name)}. You're choosing with confidence.`
+              : `<span class="faces" role="img" aria-label="Smiling face with thumbs down">🙂👎</span> Better luck next time, ${esc(r.name)}. Review the explanations below, practise a few more cases and try again.`}</p>
+            <p class="hint" id="saveStatus">Saving your score…</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn primary" id="qDownload">Download my quiz</button>
+            <button class="btn" id="qAgain">Take another quiz</button>
+            <button class="btn ghost" data-goto="history">View history</button>
+          </div>
+        </div>
+      </div>
+      <div class="review">${quiz.items.map((it, k) => {
+        const c = CASES.find(x => x.id === it.id);
+        const cls = it.score >= 8 ? "right" : it.score >= 5 ? "partial" : "wrong";
+        const label = it.score >= 8 ? "Well chosen" : it.score >= 5 ? "Partially suitable" : "Unsuitable";
+        const keyLines = it.res.lines.filter(l => l[0] !== "good").slice(0, 2);
+        return `<article class="review-item ${cls}">
+          <div class="hint">Question ${k + 1} · Level ${c.lvl} · ${esc(c.ind)}</div>
+          <h3>${esc(c.title)}</h3>
+          <p class="hint">${esc(c.text)}</p>
+          <div class="ans-row"><span>Your answer:</span> ${pills(it.options[it.choice])} <strong class="num">${it.score}/10</strong> · ${label}</div>
+          <div class="ans-row"><span>Best answer:</span> ${pills(bestOf(c))}</div>
+          <p>${esc(c.sys)}</p>
+          ${keyLines.length ? `<ul class="fb-lines">${keyLines.map(([t, x]) => `<li class="${t}"><span class="ic" aria-hidden="true">${ICON[t]}</span><span>${esc(x)}</span></li>`).join("")}</ul>` : ""}
+          ${it.res.simpler ? `<p class="hint">${esc(it.res.simpler)}</p>` : ""}
+        </article>`;
+      }).join("")}</div>`;
+    $("#qDownload").addEventListener("click", downloadQuiz);
+    $("#qAgain").addEventListener("click", () => { quiz = null; renderQuiz(); });
+  }
+
+  function downloadQuiz() {
+    const r = quiz.run, L = [];
+    L.push("AI STACK PRACTICE LAB · QUIZ RESULT", "Applying AI Decision Models Across Functions · IIT Madras", "");
+    L.push("Participant: " + r.name + (r.batch ? " (" + r.batch + ")" : ""), "Industry: " + r.industry, "Work experience: " + r.experience, "Date: " + fmtDate(r.date), "Quiz: " + r.questions + " questions, " + r.level);
+    L.push("Score: " + r.pct + "% (" + r.points + " of " + (r.questions * 10) + " points, " + r.correct + " of " + r.questions + " well chosen)", "");
+    quiz.items.forEach((it, k) => {
+      const c = CASES.find(x => x.id === it.id);
+      L.push("------------------------------------------------------------");
+      L.push("Q" + (k + 1) + ". " + c.title + "  [Level " + c.lvl + " · " + c.ind + " · " + c.fn + "]");
+      L.push(c.text, "Options:");
+      it.options.forEach((s, j) => L.push("  " + String.fromCharCode(65 + j) + ") " + stackLabel(s) + (j === it.choice ? "   <- your answer" : "")));
+      L.push("Your answer: " + stackLabel(it.options[it.choice]) + "  (" + it.score + "/10, " + it.res.verdict + ")");
+      L.push("Best answer: " + stackLabel(bestOf(c)));
+      L.push("Why: " + c.sys);
+      it.res.lines.filter(l => l[0] !== "good").slice(0, 2).forEach(l => L.push(" - " + l[1]));
+      if (it.res.simpler) L.push(" - " + it.res.simpler);
+      L.push("");
+    });
+    L.push("Source: IITM EGAIBA Week 2, The Business AI Stack (five core categories).");
+    saveFile("ai-stack-quiz-" + slug(r.name) + "-" + r.date.slice(0, 10) + ".txt", L.join("\n"), "text/plain");
+  }
+
+  /* ---------- History view ---------- */
+  fillSelect($("#hInd"), INDUSTRIES, "All industries");
+  fillSelect($("#hExp"), EXPERIENCE, "All experience levels");
+  $("#hInd").addEventListener("change", renderHistory);
+  $("#hExp").addEventListener("change", renderHistory);
+  function setSrc(src) {
+    histSrc = src;
+    $$("#srcSeg button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.src === src)));
+    renderHistory();
+  }
+  $("#srcSeg").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setSrc(b.dataset.src); });
+
+  function currentRuns() {
+    const base = histSrc === "class" ? (sharedRuns || []) : localRuns;
+    const ind = $("#hInd").value, exp = $("#hExp").value;
+    const rows = base.filter(r => (!ind || r.industry === ind) && (!exp || r.experience === exp));
+    const val = r => sortKey === "date" ? r.date : sortKey === "pct" ? r.pct : String(r[sortKey] || "").toLowerCase();
+    return rows.slice().sort((a, b) => (val(a) > val(b) ? 1 : val(a) < val(b) ? -1 : 0) * sortDir);
+  }
+
+  function groupAvg(rows, key, order) {
+    const m = {};
+    rows.forEach(r => { const k = r[key] || "unknown"; (m[k] = m[k] || []).push(r.pct); });
+    return order.filter(k => m[k]).map(k => ({ k, n: m[k].length, avg: Math.round(m[k].reduce((a, b) => a + b, 0) / m[k].length) }));
+  }
+
+  function renderHistory() {
+    if (!$("#histTable")) return;
+    const classOff = histSrc === "class" && sharedRuns === null;
+    const rows = classOff ? [] : currentRuns();
+    const people = new Set(rows.map(r => (r.name || "").toLowerCase() + "|" + (r.batch || "")));
+    const avg = rows.length ? Math.round(rows.reduce((a, r) => a + r.pct, 0) / rows.length) : 0;
+    const bars = list => list.length ? `<div class="bars">${list.map(g => `<div class="barrow"><span class="lab" title="${esc(g.k)}">${esc(g.k)}</span><span class="track"><span class="fill" style="display:block;width:${g.avg}%"></span></span><span class="num">${g.avg}% · ${g.n}</span></div>`).join("")}</div>` : `<p class="hint">No attempts yet.</p>`;
+    $("#summary").innerHTML = `
+      <div class="panel" style="box-shadow:none"><div class="stat"><span class="eyebrow">Attempts</span><span class="v num">${rows.length}</span><span class="hint">${people.size} participant${people.size === 1 ? "" : "s"} · average ${avg}%</span></div></div>
+      <div class="panel" style="box-shadow:none"><span class="eyebrow">Average by industry</span>${bars(groupAvg(rows, "industry", INDUSTRIES))}</div>
+      <div class="panel" style="box-shadow:none"><span class="eyebrow">Average by experience</span>${bars(groupAvg(rows, "experience", EXPERIENCE))}</div>`;
+    const cols = [["name", "Participant"], ["batch", "Batch / roll"], ["industry", "Industry"], ["experience", "Experience"], ["date", "Date"], ["questions", "Qs", 1], ["correct", "Correct", 1], ["pct", "Score", 1]];
+    const head = `<thead><tr>${cols.map(([k, l, n]) => `<th class="${n ? "num" : ""}" aria-sort="${sortKey === k ? (sortDir > 0 ? "ascending" : "descending") : "none"}"><button type="button" data-sort="${k}">${esc(l)}${sortKey === k ? (sortDir > 0 ? " ▲" : " ▼") : ""}</button></th>`).join("")}</tr></thead>`;
+    let body;
+    if (classOff) body = `<tr><td colspan="8"><div class="empty">${sharedState === "loading" ? "Connecting to the class board…" : "The class board isn't available in this view. Switch to “This device” to see scores saved in this browser."}</div></td></tr>`;
+    else if (!rows.length) body = `<tr><td colspan="8"><div class="empty">No quiz attempts yet${$("#hInd").value || $("#hExp").value ? " for these filters" : ""}. Complete a quiz in the Quiz tab, and your score will appear here.</div></td></tr>`;
+    else body = rows.map(r => `<tr><td>${esc(r.name)}</td><td>${esc(r.batch)}</td><td>${esc(r.industry)}</td><td>${esc(r.experience)}</td><td class="num">${esc(fmtDate(r.date))}</td><td class="num">${r.questions}</td><td class="num">${r.correct}</td><td class="num"><strong>${r.pct}%</strong></td></tr>`).join("");
+    $("#histTable").innerHTML = head + `<tbody>${body}</tbody>`;
+    $("#clearLocal").hidden = histSrc !== "local";
+    const shareMsg = {
+      loading: "Connecting to the class board…",
+      live: "<strong>Class board is on.</strong> Your quiz scores are saved here for everyone in the session to see. Each learner can only change their own record.",
+      readonly: "<strong>You can view the class board, but your scores are saved on this device only.</strong> Saving to the board needs a signed-in account with Contributor access. Download your quiz or this history and share it with your instructor, who can import it.",
+      off: "<strong>The class board isn't available here</strong> (for example, when the page is opened as a local file). Scores are saved in this browser only."
+    }[sharedState];
+    $("#storageNote").innerHTML = `<span>${shareMsg}</span>
+      <span>“This device” history lives in this browser's local storage. It disappears if browser data is cleared or in private windows, and it isn't visible on other devices.</span>
+      <span>To combine results, download the CSV from each device and use <em>Import CSV</em> on the instructor's device. Duplicate attempts are skipped automatically.</span>`;
+  }
+  $("#histTable").addEventListener("click", e => {
+    const b = e.target.closest("[data-sort]"); if (!b) return;
+    const k = b.dataset.sort;
+    if (sortKey === k) sortDir = -sortDir; else { sortKey = k; sortDir = k === "date" || k === "pct" ? -1 : 1; }
+    renderHistory();
+  });
+
+  const CSV_COLS = ["Name", "Batch/Roll", "Industry", "Work experience", "Date", "Questions", "Level", "Correct", "Points", "Score %", "Attempt ID"];
+  const csvCell = v => { const s = String(v ?? ""); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  $("#dlCsv").addEventListener("click", () => {
+    const rows = histSrc === "class" && sharedRuns === null ? [] : currentRuns();
+    if (!rows.length) { toast("There's nothing to download yet."); return; }
+    const lines = [CSV_COLS.join(",")].concat(rows.map(r => [r.name, r.batch, r.industry, r.experience, r.date, r.questions, r.level, r.correct, r.points, r.pct, r.id].map(csvCell).join(",")));
+    saveFile("ai-stack-history-" + (histSrc === "class" ? "class" : "device") + "-" + new Date().toISOString().slice(0, 10) + ".csv", lines.join("\n"), "text/csv");
+  });
+
+  function parseCsv(text) {
+    const rows = []; let row = [], cell = "", q = false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (q) { if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += ch; }
+      else if (ch === '"') q = true;
+      else if (ch === ",") { row.push(cell); cell = ""; }
+      else if (ch === "\n" || ch === "\r") { if (ch === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
+      else cell += ch;
+    }
+    if (cell || row.length) { row.push(cell); rows.push(row); }
+    return rows.filter(r => r.some(x => x.trim()));
+  }
+  $("#importCsv").addEventListener("change", async e => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    try {
+      const rows = parseCsv(await f.text());
+      const head = rows.shift() || [];
+      const ix = name => head.findIndex(h => h.trim().toLowerCase() === name.toLowerCase());
+      if (ix("Name") < 0 || ix("Score %") < 0) { toast("That file doesn't look like a history CSV from this lab."); return; }
+      const have = new Set(localRuns.map(r => r.id));
+      let added = 0;
+      rows.forEach(c => {
+        const g = n => (c[ix(n)] ?? "").trim();
+        const run = { id: g("Attempt ID") || ("imp" + Math.random().toString(36).slice(2)), name: g("Name"), batch: g("Batch/Roll"), industry: g("Industry") || "Other", experience: g("Work experience") || "unknown", date: g("Date") || new Date().toISOString(), questions: +g("Questions") || 0, level: g("Level"), correct: +g("Correct") || 0, points: +g("Points") || 0, pct: +g("Score %") || 0 };
+        if (run.name && !have.has(run.id)) { localRuns.push(run); have.add(run.id); added++; }
+      });
+      store.set("aistack.history", localRuns);
+      setSrc("local");
+      toast(added ? `Imported ${added} attempt${added === 1 ? "" : "s"} into this device's history.` : "No new attempts found in that file.");
+    } catch (err) { toast("Couldn't read that file. Please choose a CSV exported from this lab."); }
+    e.target.value = "";
+  });
+
+  $("#clearLocal").addEventListener("click", () => {
+    const box = $("#clearConfirm");
+    box.hidden = false;
+    box.innerHTML = `<div class="confirm" style="margin-top:12px"><span>Remove all ${localRuns.length} attempts saved in this browser? This can't be undone. Download a CSV first if you need a copy.</span>
+      <button class="btn small danger" id="clearYes">Yes, clear</button><button class="btn small" id="clearNo">Keep them</button></div>`;
+    $("#clearYes").addEventListener("click", () => { localRuns = []; store.set("aistack.history", localRuns); box.hidden = true; renderHistory(); toast("This device's history was cleared."); });
+    $("#clearNo").addEventListener("click", () => { box.hidden = true; });
+  });
+
+  /* ---------- Boot ---------- */
+  const hash = (location.hash || "").slice(1);
+  showTab(TABS.includes(hash) ? hash : store.get("aistack.tab", "practice"));
+  renderQuiz();
+  renderHistory();
+  initShared();
+})();
+</script>
